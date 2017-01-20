@@ -7,7 +7,9 @@ public class GameController : MonoBehaviour {
 
 	public float wave_kappa = 1.0f;
 
-	public float key_input_force = 10;
+	public float key_input_force = 500;
+
+	public float max_speed = 500;
 
 	// Static singleton property
 	private static GameController instance;

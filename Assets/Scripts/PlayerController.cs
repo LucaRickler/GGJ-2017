@@ -32,14 +32,24 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void FixedUpdate () {
+		var speed = my_body.velocity;
+		if (speed.x > gc.max_speed)
+			speed.x = gc.max_speed;
+		else if (speed.x < -gc.max_speed)
+			speed.x = -gc.max_speed;
+		if (speed.y > gc.max_speed)
+			speed.y = gc.max_speed;
+		else if (speed.y < -gc.max_speed)
+			speed.y = -gc.max_speed;
+		my_body.velocity = speed;
 	}
 
 	public void RecordInput (InputType type) {
 		if (input_ready) {
+			Debug.Log (type);
 			switch (type) {
-			case InputType.DOWN:
+			case InputType.DOWN: 
 				ApplyForce (new Vector2(0.0f,-gc.key_input_force));
 				break;
 			case InputType.LEFT:
@@ -49,7 +59,7 @@ public class PlayerController : MonoBehaviour {
 				ApplyForce (new Vector2(gc.key_input_force,0.0f));
 				break;
 			case InputType.UP:
-				ApplyForce (new Vector2(0.0f,gc.key_input_force));
+				ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
 				break;
