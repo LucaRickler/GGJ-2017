@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour {
 				ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
+				SpawnWave (sphericWave, Input.mousePosition, 0.0f, 10);
 				break;
 			case InputType.LEFT_M_UP:
 				break;
@@ -78,10 +79,10 @@ public class PlayerController : MonoBehaviour {
 	}
 
 
-	void SpawnWave (GameObject wave_type, Vector2 direction, float spread, float intensity) {
+	void SpawnWave (GameObject wave_type, Vector3 direction, float spread, float intensity) {
 		GameObject newElement = Instantiate (wave_type) as GameObject;
-		newElement.transform.localScale = new Vector2 (1, 1);
-//		newElement.GetComponent<ResElement> ().Link (res);
+		newElement.transform.localScale = new Vector3 (1, 1, 1);
+		newElement.GetComponent<Wave> ().init (new Vector3 (my_body.centerOfMass.x, my_body.centerOfMass.y, 0), intensity, spread);
 //		resElements.Add (newElement);
 	}
 }
