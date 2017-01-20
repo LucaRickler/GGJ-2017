@@ -3,6 +3,10 @@ using System.Collections;
 
 public class AudioController : MonoBehaviour {
 
+	public enum SFX	{
+		NUMBER_OF_SFX
+	};
+
 	// Static singleton property
 	private static AudioController instance;
 
@@ -34,5 +38,12 @@ public class AudioController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public void PlaySFX(SFX sound) {
+		switch (sound) {
+		default:
+			break;
+		}
 	}
 }

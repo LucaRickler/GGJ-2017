@@ -43,4 +43,8 @@ public class GameController : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	public bool isCameraFollowMode () {
+		return true;
+	}
 }
