@@ -15,11 +15,13 @@ public enum InputType {
 
 public class PlayerController : MonoBehaviour {
 
-	//private bool input_ready;
+	private bool input_ready;
+
+	private GameController gc;
 
 	// Use this for initialization
 	void Start () {
-	
+		gc = GameController.Instance;
 	}
 	
 	// Update is called once per frame
