@@ -76,4 +76,12 @@ public class PlayerController : MonoBehaviour {
 	public void ApplyForce (Vector2 impulse) {
 		my_body.AddForce (impulse);
 	}
+
+
+	void SpawnWave (GameObject wave_type, Vector2 direction, float spread, float intensity) {
+		GameObject newElement = Instantiate (wave_type) as GameObject;
+		newElement.transform.localScale = new Vector2 (1, 1);
+//		newElement.GetComponent<ResElement> ().Link (res);
+//		resElements.Add (newElement);
+	}
 }
