@@ -3,7 +3,9 @@ using System.Collections;
 
 public class GameController : MonoBehaviour {
 
-	public PlayerController player; 
+	public PlayerController player;
+
+	public const float wave_kappa = 1.0f;
 
 	// Static singleton property
 	private static GameController instance;
