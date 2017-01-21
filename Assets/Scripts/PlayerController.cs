@@ -50,7 +50,8 @@ public class PlayerController : MonoBehaviour {
 				my_pushable.ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
-				GameController.Instance.SpawnWave (my_pushable.GetOrigin3D(), /*sphericWave, Input.mousePosition, 0.0f,*/ 10);
+				GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/100, 1.0f);
+				Debug.LogError ("");
 				break;
 			case InputType.LEFT_M_UP:
 				break;

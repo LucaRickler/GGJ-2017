@@ -36,11 +36,7 @@ public class Pushable : MonoBehaviour {
     public void ApplyForce(Vector2 impulse) {
         my_body.AddForce(impulse);
     }
-
-    public Vector3 GetOrigin3D() {
-        return new Vector3(my_body.centerOfMass.x, my_body.centerOfMass.y, 0);
-    }
-
+		
     void OnTriggerEnter2D(Collider2D otherCollider)
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
@@ -56,7 +52,7 @@ public class Pushable : MonoBehaviour {
             float impulseIntensity = absorbedIntensity - reflectedIntensity;
             if (!Mathf.Approximately(reflectedIntensity, 0) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
             {
-                GameController.Instance.SpawnWave(contactPoint, reflectedIntensity);
+                GameController.Instance.SpawnWave(contactPoint, reflectedIntensity, 0.0f);
             }
             if (!Mathf.Approximately(impulseIntensity, 0))
             {

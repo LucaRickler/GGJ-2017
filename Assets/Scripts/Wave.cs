@@ -7,9 +7,12 @@ public class Wave : MonoBehaviour {
 	public float propagationSpeed = 1;
     public WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD;
 
-    private float _radius = 0;
-	public float radius { get { return _radius; } private set { _radius = value; } }
+	private float _localRadius = 0;
+	public float radius { get { return _localRadius + _initialRadius; } }
 
+	private float _initialRadius;
+
+	[SerializeField]
 	private float _intensity;
 	public float intensity { get { return _intensity; } private set { _intensity = value; } }
 
@@ -23,11 +26,12 @@ public class Wave : MonoBehaviour {
 	{
 		_initialIntensity = initialIntensity;
 		_intensity = initialIntensity;
-		_radius = radius;
+		_localRadius = 0.0f;
+		_initialRadius = radius;
         this.propagationDirection = propagationDirection;
         _center = center;
 		gameObject.transform.position = center;
-		gameObject.transform.localScale = new Vector3(_radius, _radius, _radius);
+		gameObject.transform.localScale = new Vector3(_localRadius, _localRadius, _localRadius);
 	}
 
 	// Use this for initialization
@@ -37,16 +41,17 @@ public class Wave : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		float deltaRadius = propagationSpeed * Time.deltaTime;
-        if (propagationDirection == WaveDirectionEnum.FORWARD)
-        {
-            radius += deltaRadius;
-        }
-        else
-        {
-            radius -= deltaRadius;
-        }
-		gameObject.transform.localScale = new Vector3(_radius, _radius, _radius);
-        _intensity = GameController.Instance.wave_kappa / radius;
+		if (propagationDirection == WaveDirectionEnum.FORWARD) {
+			_localRadius += deltaRadius;
+		} else {
+			_localRadius -= deltaRadius;
+			if (_localRadius <= 0.0f) {
+				StartCoroutine (destroyThisObjectCoroutine ());
+				return;
+			}
+		}
+		gameObject.transform.localScale = new Vector3(radius, radius, radius);
+		_intensity = _initialIntensity -  GameController.Instance.wave_kappa * _localRadius;
         if (_intensity < GameController.Instance.min_force_intensity)
         {
             _intensity = 0;
@@ -57,7 +62,7 @@ public class Wave : MonoBehaviour {
     IEnumerator destroyThisObjectCoroutine ()
     {
         yield return null;
-        DestroyObject(this);
+		DestroyObject(gameObject);
     }
 
 }

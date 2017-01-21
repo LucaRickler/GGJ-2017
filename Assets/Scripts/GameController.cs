@@ -5,7 +5,7 @@ public class GameController : MonoBehaviour {
 
 	public PlayerController player;
 
-	public float wave_kappa = 1.0f;
+	public float wave_kappa = 0.001f;
 
 	public float key_input_force = 500;
 
@@ -52,10 +52,10 @@ public class GameController : MonoBehaviour {
 		return true;
 	}
 
-    public void SpawnWave(Vector3 point, /*Vector3 direction, float spread, */float intensity)
+	public void SpawnWave(Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
     {
         GameObject newElement = Instantiate(wavePrefab) as GameObject;
         newElement.transform.localScale = new Vector3(1, 1, 1);
-        newElement.GetComponent<Wave>().init(point, intensity, 0); // TODO rimettere lo spread
+        newElement.GetComponent<Wave>().init(point, intensity, 0, radius); // TODO rimettere lo spread
     }
 }
