@@ -40,8 +40,8 @@ public class Pushable : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D otherCollider)
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
-		//Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
-		Vector3 contactPoint = coll.ClosestPointOnBounds(waveCenter);
+		Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
+		//Vector3 contactPoint = coll.ClosestPointOnBounds(waveCenter);
         Debug.DrawLine(waveCenter, contactPoint);
 		Debug.Log(contactPoint);
         Wave wave = otherCollider.gameObject.GetComponent<Wave>();
