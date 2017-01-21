@@ -11,8 +11,12 @@ public class GameController : MonoBehaviour {
 
 	public float max_speed = 500;
 
-	// Static singleton property
-	private static GameController instance;
+    public float min_force_intensity = 0.1f;
+
+    public GameObject wavePrefab;
+
+    // Static singleton property
+    private static GameController instance;
 
 	//----------------------------------------------------------------//
 
@@ -47,4 +51,11 @@ public class GameController : MonoBehaviour {
 	public bool isCameraFollowMode () {
 		return true;
 	}
+
+    public void SpawnWave(Vector3 point, /*Vector3 direction, float spread, */float intensity)
+    {
+        GameObject newElement = Instantiate(wavePrefab) as GameObject;
+        newElement.transform.localScale = new Vector3(1, 1, 1);
+        newElement.GetComponent<Wave>().init(point, intensity, 0); // TODO rimettere lo spread
+    }
 }
