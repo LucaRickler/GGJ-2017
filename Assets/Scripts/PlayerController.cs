@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour {
 				break;
 			case InputType.LEFT_M_DOWN:
 				//click_timer = Time.time;
-				GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
+				GameController.Instance.SpawnWave (my_pushable.safeZoneCollider, transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
 				break;
 			case InputType.LEFT_M_UP:
 				//float intensity = (Time.time - click_timer) * gc.player_wave_convertion;

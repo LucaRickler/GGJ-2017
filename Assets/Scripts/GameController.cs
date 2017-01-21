@@ -51,12 +51,12 @@ public class GameController : MonoBehaviour {
 		return false;//true;
 	}
 
-	public void SpawnWave(Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
+	public void SpawnWave(CircleCollider2D creatorSafeZone, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
     {
         GameObject newElement = Instantiate(wavePrefab) as GameObject;
         newElement.transform.localScale = new Vector3(1, 1, 1);
         //StartCoroutine(initWaveEnumerator(newElement.GetComponent<Wave>(), point, intensity, radius));
-		newElement.GetComponent<Wave>().init(point, intensity, 0, radius); // TODO rimettere lo spread
+		newElement.GetComponent<Wave>().init(creatorSafeZone, point, intensity, 0, radius); // TODO rimettere lo spread
     }
 
     //public IEnumerator initWaveEnumerator(Wave wave, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)

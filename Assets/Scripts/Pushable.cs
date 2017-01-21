@@ -15,7 +15,7 @@ public class Pushable : MonoBehaviour {
 
     public float hitPoints;
 
-    public Collider2D safeZoneCollider;
+    public CircleCollider2D safeZoneCollider;
 
     void Start() {
         gc = GameController.Instance;
@@ -64,7 +64,7 @@ public class Pushable : MonoBehaviour {
                 float impulseIntensity = absorbedIntensity - reflectedIntensity;
                 if (!Mathf.Approximately(reflectedIntensity, 0) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
                 {
-                    GameController.Instance.SpawnWave(contactPoint, reflectedIntensity, 0.0f);
+                    GameController.Instance.SpawnWave(safeZoneCollider, contactPoint, reflectedIntensity, 0.0f);
                 }
                 if (!Mathf.Approximately(impulseIntensity, 0))
                 {
