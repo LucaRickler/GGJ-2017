@@ -56,6 +56,12 @@ public class GameController : MonoBehaviour {
     {
         GameObject newElement = Instantiate(wavePrefab) as GameObject;
         newElement.transform.localScale = new Vector3(1, 1, 1);
-        newElement.GetComponent<Wave>().init(point, intensity, 0, radius); // TODO rimettere lo spread
+        StartCoroutine(initWaveEnumerator(newElement.GetComponent<Wave>(), point, intensity, radius));
+    }
+
+    public IEnumerator initWaveEnumerator(Wave wave, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
+    {
+        yield return null;
+        wave.init(point, intensity, 0, radius); // TODO rimettere lo spread
     }
 }
