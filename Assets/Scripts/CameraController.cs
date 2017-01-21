@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (GameController.Instance.isCameraFollowMode ()) {
-			transform.position = new Vector3 (player.transform.position.x, player.transform.position.y, transform.position.z);
+			transform.position = new Vector3 (player.transform.position.x, transform.position.y, transform.position.z);
 		}
 	}
 
