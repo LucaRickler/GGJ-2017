@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour {
 
 	public float player_wave_convertion = 200;
 	public float min_wave_intensity = 150;
-	public float max_wave_intensity = 300;
+	public float max_wave_intensity = 250;
 	public float max_charge_time = 5;
 
 	// Use this for initialization
@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour {
 		my_pushable = GetComponent<Pushable> ();
 		gc = GameController.Instance;
 		input_ready = true;
+		//my_pushable.isPC = true;
 	}
 	
 	// Update is called once per frame
@@ -64,16 +65,16 @@ public class PlayerController : MonoBehaviour {
 				my_pushable.ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
-				click_timer = 0;
-				_charging_wave = true;
-				break;
+					click_timer = 0;
+					_charging_wave = true;
+					break;
 			case InputType.LEFT_M_UP:
-				float intensity = click_timer * player_wave_convertion;
-				intensity = intensity < min_wave_intensity ? min_wave_intensity : intensity;
-				intensity = intensity > max_wave_intensity ? max_wave_intensity : intensity;
-				_charging_wave = false;
-                GameController.Instance.SpawnWave(my_pushable.safeZoneCollider, transform.position, intensity, 0, 1, WaveDirectionEnum.FORWARD, true);
-				break;
+					float intensity = click_timer * player_wave_convertion;
+					intensity = intensity < min_wave_intensity ? min_wave_intensity : intensity;
+					intensity = intensity > max_wave_intensity ? max_wave_intensity : intensity;
+					_charging_wave = false;
+					GameController.Instance.SpawnWave (my_pushable.safeZoneCollider, transform.position, intensity, 0, 1, WaveDirectionEnum.FORWARD, true);
+					break;
 			case InputType.RIGHT_M_DOWN:
 				break;
 			case InputType.RIGHT_M_UP:

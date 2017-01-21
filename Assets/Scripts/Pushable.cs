@@ -17,6 +17,8 @@ public class Pushable : MonoBehaviour {
 
     public CircleCollider2D safeZoneCollider;
 
+	public bool isPC;
+
     void Start() {
         gc = GameController.Instance;
         my_body = GetComponent<Rigidbody2D>();
@@ -41,7 +43,8 @@ public class Pushable : MonoBehaviour {
     }
 
     public void ApplyForce(Vector2 impulse) {
-        my_body.AddForce(impulse);
+        //my_body.AddForce(impulse);
+		my_body.AddForce(impulse/100, ForceMode2D.Impulse);
     }
 
     void OnTriggerEnter2D(Collider2D otherCollider)
@@ -63,6 +66,8 @@ public class Pushable : MonoBehaviour {
                 {
                     float reflectedIntensity = absorbedIntensity * reflectedFraction;
                     float impulseIntensity = absorbedIntensity - reflectedIntensity;
+					if (isPC)
+						impulseIntensity *= 3;
                     if (!Mathf.Approximately(reflectedIntensity, GameController.Instance.min_force_intensity) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
                     {
                         if (wave.firstSpawn || Vector3.Distance(contactPoint, waveCenter) > GameController.Instance.minimumWaveCollisionDistance)
