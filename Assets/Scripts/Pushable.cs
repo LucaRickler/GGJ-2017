@@ -70,14 +70,18 @@ public class Pushable : MonoBehaviour {
 						impulseIntensity *= 3;
                     if (!Mathf.Approximately(reflectedIntensity, GameController.Instance.min_force_intensity) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
                     {
-                        if (wave.firstSpawn || Vector3.Distance(contactPoint, waveCenter) > GameController.Instance.minimumWaveCollisionDistance)
+                        if (wave.firstSpawn ||Vector3.Distance(contactPoint, waveCenter) > GameController.Instance.minimumWaveCollisionDistance)
                         {
                             wave.duplicate(safeZoneCollider, contactPoint, reflectedIntensity);
                         }
                     }
                     if (!Mathf.Approximately(impulseIntensity, GameController.Instance.min_force_intensity))
                     {
-                        Vector2 inpulseDirection = (contactPoint - waveCenter).normalized;
+                        Vector2 inpulseDirection;
+                        if (wave.waveType == WaveType.SPHERIC)
+                            inpulseDirection = (contactPoint - waveCenter).normalized;
+                        else
+                            inpulseDirection = wave.direction.normalized;
                         if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
                             inpulseDirection = inpulseDirection * (-1);
                         ApplyForce(inpulseDirection * impulseIntensity);
@@ -132,12 +136,25 @@ public class Pushable : MonoBehaviour {
             {
                 if (h.collider == this.coll)
                 {
-                    float dist = Vector3.Distance(h.point, otherColliderCenter);
-                    if (dist < minDistance)
+                    bool inRange = false;
+                    if (wave.waveType == WaveType.SPHERIC)
+                        inRange = true;
+                    else
                     {
-                        minDistance = dist;
-                        myCollision = h;
-                        found = true;
+                        float a = angleBetween(wave.direction, h.point - new Vector2(otherColliderCenter.x, otherColliderCenter.y));
+                        Debug.Log("angle: " + a);
+                        if (a < GameController.Instance.spread)
+                            inRange = true;
+                    }
+                    if (inRange)
+                    {
+                        float dist = Vector3.Distance(h.point, otherColliderCenter);
+                        if (dist < minDistance)
+                        {
+                            minDistance = dist;
+                            myCollision = h;
+                            found = true;
+                        }
                     }
                 }
             }

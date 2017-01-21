@@ -15,12 +15,14 @@ public class Wave : MonoBehaviour {
 
     private float _initialRadius;
 
-    [SerializeField]
     private float _intensity;
     public float intensity { get { return _intensity; } private set { _intensity = value; } }
 
     private float _initialIntensity;
     private Vector3 _center;
+
+    private Vector2 _direction;
+    public Vector2 direction { get { return _direction; } }
 
     private float kappa { get { return GameController.Instance.wave_kappa; } }
 
@@ -29,18 +31,28 @@ public class Wave : MonoBehaviour {
     private CircleCollider2D creatorSafeZone;
     private CircleCollider2D waveCollider;
 
-    [SerializeField]
     private bool _firstSpawn;
     public bool firstSpawn { get{ return _firstSpawn; } }
 
+    private WaveType _waveType;
+    public WaveType waveType { get { return _waveType; } }
+
     public void duplicate (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity)
     {
-        GameController.Instance.SpawnWave(creatorSafeZone, center, initialIntensity, _spread, 0, propagationDirection, false);
+        if (waveType == WaveType.DIRETIONAL)
+        {
+            GameController.Instance.SpawnDiretionalWave(creatorSafeZone, center, direction * (-1), initialIntensity, spread, 0, propagationDirection, false);
+        }
+        else
+        {
+            GameController.Instance.SpawnSphericWave(creatorSafeZone, center, initialIntensity, 0, propagationDirection, false);
+        }
     }
 
-    public void init (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity, float spread, float radius,
+    private void init (WaveType type, CircleCollider2D creatorSafeZone, Vector3 center, Vector3 direction, float initialIntensity, float spread, float radius,
         WaveDirectionEnum propagationDirection, bool firstSpawn)
 	{
+        _waveType = type;
 		_initialIntensity = initialIntensity;
 		_intensity = initialIntensity;
 		_localRadius = 0.0f;
@@ -48,11 +60,23 @@ public class Wave : MonoBehaviour {
         _spread = spread;
         this.propagationDirection = propagationDirection;
         _center = center;
+        _direction = direction;
         _firstSpawn = firstSpawn;
 		gameObject.transform.position = center;
 		gameObject.transform.localScale = new Vector3(_localRadius, _localRadius, _localRadius);
         initialized = true;
         this.creatorSafeZone = creatorSafeZone;
+    }
+
+    public void initDirectionalWave (CircleCollider2D creatorSafeZone, Vector3 center, Vector3 direction, float initialIntensity, float radius, WaveDirectionEnum propagationDirection, bool firstSpawn)
+    {
+        init(WaveType.DIRETIONAL, creatorSafeZone, center, direction.normalized, initialIntensity, GameController.Instance.spread, radius, propagationDirection, firstSpawn);
+    } 
+
+    public void initSphericWave(CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity, float radius,
+        WaveDirectionEnum propagationDirection, bool firstSpawn)
+    {
+        init(WaveType.SPHERIC, creatorSafeZone, center, Vector3.zero, initialIntensity, 0, radius, propagationDirection, firstSpawn);
     }
 
     // Use this for initialization
@@ -68,6 +92,11 @@ public class Wave : MonoBehaviour {
             if (propagationDirection == WaveDirectionEnum.FORWARD)
             {
                 _localRadius += deltaRadius;
+                if (_localRadius > GameController.Instance.maximumWaveRadius)
+                {
+                    StartCoroutine(destroyThisObjectCoroutine());
+                    return;
+                }
             }
             else
             {
@@ -110,4 +139,10 @@ public enum WaveDirectionEnum
 {
 	FORWARD,
 	BACKWARD
+}
+
+public enum WaveType
+{
+    DIRETIONAL,
+    SPHERIC
 }
