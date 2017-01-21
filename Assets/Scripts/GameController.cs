@@ -10,11 +10,9 @@ public class GameController : MonoBehaviour {
     public float key_input_force = 500;
     public float max_speed = 500;
     public float min_force_intensity = 5f;
-    public float minimumWaveCollisionDistance = 1f;
+    public float minimumWaveCollisionDistance = 0.1f;
     [Range(0, 90)]
     public float spread = 30;
-    [Range(5, 30)]
-    public float maximumWaveRadius = 10;
 
     public GameObject wavePrefab;
 

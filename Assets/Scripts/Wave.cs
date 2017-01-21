@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class Wave : MonoBehaviour {
 
-    public float propagationSpeed = 1;
+    public float propagationSpeed = 2;
     public WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD;
+
+	[Range(5, 30)]
+	public float maximumWaveRadius = 100;
 
     private float _localRadius = 0;
     public float radius { get { return _localRadius + _initialRadius; } }
@@ -92,7 +95,7 @@ public class Wave : MonoBehaviour {
             if (propagationDirection == WaveDirectionEnum.FORWARD)
             {
                 _localRadius += deltaRadius;
-                if (_localRadius > GameController.Instance.maximumWaveRadius)
+                if (_localRadius > maximumWaveRadius)
                 {
                     StartCoroutine(destroyThisObjectCoroutine());
                     return;
