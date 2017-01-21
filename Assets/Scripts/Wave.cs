@@ -21,6 +21,8 @@ public class Wave : MonoBehaviour {
 
 	private float kappa { get { return GameController.Instance.wave_kappa; } }
 
+    private bool initialized = false;
+
 	public void init (Vector3 center, float initialIntensity, float spread, float radius = 0,
         WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD)
 	{
@@ -32,6 +34,7 @@ public class Wave : MonoBehaviour {
         _center = center;
 		gameObject.transform.position = center;
 		gameObject.transform.localScale = new Vector3(_localRadius, _localRadius, _localRadius);
+        initialized = true;
 	}
 
 	// Use this for initialization
@@ -40,22 +43,29 @@ public class Wave : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		float deltaRadius = propagationSpeed * Time.deltaTime;
-		if (propagationDirection == WaveDirectionEnum.FORWARD) {
-			_localRadius += deltaRadius;
-		} else {
-			_localRadius -= deltaRadius;
-			if (_localRadius <= 0.0f) {
-				StartCoroutine (destroyThisObjectCoroutine ());
-				return;
-			}
-		}
-		gameObject.transform.localScale = new Vector3(radius, radius, radius);
-		_intensity = _initialIntensity -  GameController.Instance.wave_kappa * _localRadius;
-        if (_intensity < GameController.Instance.min_force_intensity)
+        if (initialized)
         {
-            _intensity = 0;
-            StartCoroutine(destroyThisObjectCoroutine());
+            float deltaRadius = propagationSpeed * Time.deltaTime;
+            if (propagationDirection == WaveDirectionEnum.FORWARD)
+            {
+                _localRadius += deltaRadius;
+            }
+            else
+            {
+                _localRadius -= deltaRadius;
+                if (_localRadius <= 0.0f)
+                {
+                    StartCoroutine(destroyThisObjectCoroutine());
+                    return;
+                }
+            }
+            gameObject.transform.localScale = new Vector3(radius, radius, radius);
+            _intensity = _initialIntensity - GameController.Instance.wave_kappa * _localRadius;
+            if (_intensity < GameController.Instance.min_force_intensity)
+            {
+                _intensity = 0;
+                StartCoroutine(destroyThisObjectCoroutine());
+            }
         }
 	}
 
