@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour {
 		if (input_ready) {
 			Debug.Log (type);
             Vector3 mousePosition = Input.mousePosition;
-            Vector3 playerScreenCoord = GameController.Instance.camera.WorldToScreenPoint(gameObject.transform.position);
+            Vector3 playerScreenCoord = GameController.Instance.sceneCamera.WorldToScreenPoint(gameObject.transform.position);
             Vector3 waveDir = (mousePosition - playerScreenCoord).normalized;
             switch (type) {
 			case InputType.DOWN: 
@@ -72,12 +72,12 @@ public class PlayerController : MonoBehaviour {
 
 				click_timer_left = 0;
 				_charging_left = true;
-                leftMouseWave.ghargingDebug = true;
+                leftMouseWave.chargingDebug = true;
                 break;
             case InputType.RIGHT_M_DOWN:
                 click_timer_right = 0;
                 _charging_right = true;
-                rightMouseWave.ghargingDebug = true;
+                rightMouseWave.chargingDebug = true;
                 break;
             case InputType.LEFT_M_UP:
 				float intensity = click_timer_left * leftMouseWave.player_wave_convertion;
@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour {
 				intensity = intensity > leftMouseWave.max_wave_intensity ? leftMouseWave.max_wave_intensity : intensity;
                 leftMouseWave.IntensityDebug = intensity;
                 _charging_left = false;
-                leftMouseWave.ghargingDebug = false;
+                leftMouseWave.chargingDebug = false;
                 if (leftMouseWave.type == WaveType.SPHERIC)
                     GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 else
@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour {
                 intensity = intensity > rightMouseWave.max_wave_intensity ? rightMouseWave.max_wave_intensity : intensity;
                 rightMouseWave.IntensityDebug = intensity;
                 _charging_right = false;
-                rightMouseWave.ghargingDebug = false;
+                rightMouseWave.chargingDebug = false;
                 if (rightMouseWave.type == WaveType.SPHERIC)
                     GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 else
@@ -123,5 +123,5 @@ public class WaveChargingCongig
     public float startRadius = 1;
     [Header("===== DEBUG =====")]
     public float IntensityDebug = 0;
-    public bool ghargingDebug = false;
+    public bool chargingDebug = false;
 }

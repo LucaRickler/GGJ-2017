@@ -51,54 +51,57 @@ public class Pushable : MonoBehaviour {
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
         Wave wave = otherCollider.gameObject.GetComponent<Wave>();
-        if (!wave.isCreator(safeZoneCollider) || !wave.isInCreatorSafeZone())
+        if (wave.waveType == WaveType.SPHERIC)
         {
-            Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
-            bool serveCollision = true;
-            serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
-            if (serveCollision)
+            if (!wave.isCreator(safeZoneCollider) || !wave.isInCreatorSafeZone())
             {
-                //Debug.DrawLine(waveCenter, contactPoint, Color.red, 100);
-
-                float absorbedIntensity = wave.intensity * absorbedFraction;
-
-                if (absorbedIntensity > GameController.Instance.min_force_intensity)
+                Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
+                bool serveCollision = true;
+                serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
+                if (serveCollision)
                 {
-                    float reflectedIntensity = absorbedIntensity * reflectedFraction;
-                    float impulseIntensity = absorbedIntensity - reflectedIntensity;
-					if (isPC)
-						impulseIntensity *= 3;
-                    if (!Mathf.Approximately(reflectedIntensity, GameController.Instance.min_force_intensity) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
-                    {
-                        if (wave.firstSpawn ||Vector3.Distance(contactPoint, waveCenter) > GameController.Instance.minimumWaveCollisionDistance)
-                        {
-                            wave.duplicate(safeZoneCollider, contactPoint, reflectedIntensity);
-                        }
-                    }
-                    if (!Mathf.Approximately(impulseIntensity, GameController.Instance.min_force_intensity))
-                    {
-                        Vector2 inpulseDirection;
-                        if (wave.waveType == WaveType.SPHERIC)
-                            inpulseDirection = (contactPoint - waveCenter).normalized;
-                        else
-                            inpulseDirection = wave.direction.normalized;
-                        if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
-                            inpulseDirection = inpulseDirection * (-1);
-                        ApplyForce(inpulseDirection * impulseIntensity);
-                    }
+                    this.serveCollision(wave, contactPoint, waveCenter);
                 }
             }
         }
     }
 
+    public void serveCollision (Wave wave, Vector3 contactPoint, Vector3 waveCenter)
+    {
+        float absorbedIntensity = wave.intensity * absorbedFraction;
+        if (absorbedIntensity > GameController.Instance.min_force_intensity)
+        {
+            float reflectedIntensity = absorbedIntensity * reflectedFraction;
+            float impulseIntensity = absorbedIntensity - reflectedIntensity;
+            if (isPC)
+                impulseIntensity *= 3;
+            if (!Mathf.Approximately(reflectedIntensity, GameController.Instance.min_force_intensity) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
+            {
+                if (wave.firstSpawn || (Vector3.Distance(contactPoint, waveCenter) > GameController.Instance.minimumWaveCollisionDistance || wave.waveType == WaveType.DIRETIONAL))
+                {
+                    wave.duplicate(safeZoneCollider, contactPoint, reflectedIntensity);
+                }
+            }
+            if (!Mathf.Approximately(impulseIntensity, GameController.Instance.min_force_intensity))
+            {
+                Vector2 inpulseDirection;
+                if (wave.waveType == WaveType.SPHERIC)
+                    inpulseDirection = (contactPoint - waveCenter).normalized;
+                else
+                    inpulseDirection = wave.direction.normalized;
+                if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
+                    inpulseDirection = inpulseDirection * (-1);
+                ApplyForce(inpulseDirection * impulseIntensity);
+            }
+        }
+    }
+
+    // chiamato solo se wave è di tipo SFERICO
     private bool getCollisionPoint (CircleCollider2D otherCollider, out Vector3 point)
     {
         Vector3 otherColliderCenter = otherCollider.gameObject.transform.position;
         Vector3 fromOtherToThisObjectVector = gameObject.transform.position - otherColliderCenter;
-        Wave wave = otherCollider.gameObject.GetComponent<Wave>();
-        //Debug.DrawLine(otherColliderCenter, fromOtherToThisObjectVector, Color.red, 100);
         Quaternion rot = Quaternion.AngleAxis(gameObject.transform.rotation.eulerAngles.z, Vector3.forward);
-        //Quaternion rot = Quaternion.identity; // da modificare per girare i collider
         Vector3[] axis = new Vector3[]
         {
             rot * Vector3.up,
@@ -126,8 +129,6 @@ public class Pushable : MonoBehaviour {
         }
         RaycastHit2D myCollision = new RaycastHit2D();
         bool found = false;
-        //Debug.DrawLine(Vector3.zero, bestDirections[0], Color.red, 100);
-        //Debug.DrawLine(Vector3.zero, bestDirections[1], Color.yellow, 100);
         for (int i=0; i<2; i++)
         {
             RaycastHit2D[] hits = Physics2D.RaycastAll(otherColliderCenter, bestDirections[i]);
@@ -136,25 +137,12 @@ public class Pushable : MonoBehaviour {
             {
                 if (h.collider == this.coll)
                 {
-                    bool inRange = false;
-                    if (wave.waveType == WaveType.SPHERIC)
-                        inRange = true;
-                    else
+                    float dist = Vector3.Distance(h.point, otherColliderCenter);
+                    if (dist < minDistance)
                     {
-                        float a = angleBetween(wave.direction, h.point - new Vector2(otherColliderCenter.x, otherColliderCenter.y));
-                        Debug.Log("angle: " + a);
-                        if (a < GameController.Instance.spread)
-                            inRange = true;
-                    }
-                    if (inRange)
-                    {
-                        float dist = Vector3.Distance(h.point, otherColliderCenter);
-                        if (dist < minDistance)
-                        {
-                            minDistance = dist;
-                            myCollision = h;
-                            found = true;
-                        }
+                        minDistance = dist;
+                        myCollision = h;
+                        found = true;
                     }
                 }
             }
@@ -163,7 +151,6 @@ public class Pushable : MonoBehaviour {
         }
         if (!found)
         {
-            //Debug.Log("Collision point not found.");
             point = Vector3.zero;
             return false;
         }
@@ -177,24 +164,11 @@ public class Pushable : MonoBehaviour {
 
     private float angleBetween (Vector3 a, Vector3 b)
     {
-        Quaternion aRot = Quaternion.FromToRotation(Vector3.right, a);
-        Quaternion bRot = Quaternion.FromToRotation(Vector3.right, b);
-        float angle = Quaternion.Angle(aRot, bRot);
-        if (angle < 0)
-        {
-            angle *= -1;
-        }
-        while (angle > 360)
-        {
-            angle -= 360;
-        }
-        if (angle > 180)
-        {
-            angle = 360 - angle;
-        }
-        return angle;
+        float alpha = Mathf.Atan2(a.y, a.x);
+        float beta = Mathf.Atan2(b.y, b.x);
+        return Mathf.Abs(alpha - beta);
     }
-
+    
     private IEnumerator destroyThisObject()
     {
         yield return null;

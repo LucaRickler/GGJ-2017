@@ -10,6 +10,7 @@ public class Bomb : MonoBehaviour {
 	private BombSpawner my_spawner;
 
 	private bool small_fish;
+
 	// Use this for initialization
 	void Start () {
 		//GetComponent<Rigidbody2D> ().gravityScale = 0.0f;

@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class Wave : MonoBehaviour {
 
-    public float propagationSpeed = 2;
+    public float propagationSpeed = 1;
+
+    public GameObject directionalWaveBulletPrefab;
+
+    private GameObject directionalWaveBullet;
+
     public WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD;
 
 	[Range(5, 30)]
@@ -44,11 +49,11 @@ public class Wave : MonoBehaviour {
     {
         if (waveType == WaveType.DIRETIONAL)
         {
-            GameController.Instance.SpawnDiretionalWave(creatorSafeZone, center, direction * (-1), initialIntensity, spread, 0, propagationDirection, false);
+            GameController.Instance.SpawnDiretionalWave(null, center, direction * (-1), initialIntensity, spread, 0.5f, propagationDirection, false);
         }
         else
         {
-            GameController.Instance.SpawnSphericWave(creatorSafeZone, center, initialIntensity, 0, propagationDirection, false);
+            GameController.Instance.SpawnSphericWave(null, center, initialIntensity, 0, propagationDirection, false);
         }
     }
 
@@ -74,7 +79,15 @@ public class Wave : MonoBehaviour {
     public void initDirectionalWave (CircleCollider2D creatorSafeZone, Vector3 center, Vector3 direction, float initialIntensity, float radius, WaveDirectionEnum propagationDirection, bool firstSpawn)
     {
         init(WaveType.DIRETIONAL, creatorSafeZone, center, direction.normalized, initialIntensity, GameController.Instance.spread, radius, propagationDirection, firstSpawn);
-    } 
+        //Debug.DrawLine(center, center + 3*direction, Color.red, 100);
+        GetComponent<CircleCollider2D>().enabled = false;
+        directionalWaveBullet = Instantiate(directionalWaveBulletPrefab);
+        DirectionalWaveBullet directionalWaveBulletScript = directionalWaveBullet.GetComponent<DirectionalWaveBullet>();
+        Collider2D safeZoneTemp = null;
+        if (creatorSafeZone != null)
+            safeZoneTemp = creatorSafeZone.gameObject.transform.parent.gameObject.GetComponent<Collider2D>();
+        directionalWaveBulletScript.init(center + direction * radius, direction, propagationSpeed/10, gameObject, safeZoneTemp, onBulletArrived);
+    }
 
     public void initSphericWave(CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity, float radius,
         WaveDirectionEnum propagationDirection, bool firstSpawn)
@@ -133,7 +146,25 @@ public class Wave : MonoBehaviour {
     IEnumerator destroyThisObjectCoroutine ()
     {
         yield return null;
-		DestroyObject(gameObject);
+        yield return null;
+        DestroyObject(gameObject);
+        if (directionalWaveBullet != null)
+            Destroy(directionalWaveBullet.gameObject);
+            DestroyObject(gameObject);
+    }
+
+    public void onBulletArrived (DirectionalWaveBullet bullet)
+    {
+        Pushable pushable = bullet.endCollision.collider.gameObject.GetComponent<Pushable>();
+        if (pushable != null)
+        {
+            Vector2 contactPointAVG = Vector2.zero;
+            StartCoroutine(destroyThisObjectCoroutine());
+            //foreach (ContactPoint2D p in bullet.endCollision.contacts)
+            //    contactPointAVG += p.point / bullet.endCollision.contacts.Length;
+            //pushable.serveCollision(this, contactPointAVG, gameObject.transform.position);
+            pushable.serveCollision(this, bullet.endCollision.contacts[0].point, gameObject.transform.position);
+        }
     }
 
 }

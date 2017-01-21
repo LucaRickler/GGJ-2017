@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour {
     public float minimumWaveCollisionDistance = 0.1f;
     [Range(0, 90)]
     public float spread = 30;
+    [Range(5, 100)]
+    public float maximumWaveRadius = 10;
 
     public GameObject wavePrefab;
 
@@ -25,7 +27,7 @@ public class GameController : MonoBehaviour {
 
     public bool cameraCentered;
 
-    public Camera camera;
+    public Camera sceneCamera;
 
     // Static singleton property
     private static GameController instance;
@@ -72,7 +74,8 @@ public class GameController : MonoBehaviour {
     {
         GameObject newElement = Instantiate(wavePrefab) as GameObject;
         newElement.transform.localScale = new Vector3(1, 1, 1);
-        newElement.GetComponent<Wave>().initDirectionalWave(creatorSafeZone, point, direction, intensity, radius, propagationDirection, firstSpawn);
+        Wave w = newElement.GetComponent<Wave>();
+        w.initDirectionalWave(creatorSafeZone, point, direction, intensity, radius, propagationDirection, firstSpawn);
     }
 
     public void SpawnSphericWave (CircleCollider2D creatorSafeZone, Vector3 point, float intensity, float radius, WaveDirectionEnum propagationDirection, bool firstSpawn)
