@@ -28,6 +28,11 @@ public class PlayerController : MonoBehaviour {
 	private bool _charging_wave;
 	public bool isChargingWave { get { return _charging_wave; } }
 
+	public float player_wave_convertion = 200;
+	public float min_wave_intensity = 150;
+	public float max_wave_intensity = 300;
+	public float max_charge_time = 5;
+
 	// Use this for initialization
 	void Start () {
 		//charging_wave = false;
@@ -38,7 +43,7 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void FixedUpdate() {
-		if (isChargingWave)
+		if (isChargingWave && click_timer < max_charge_time)
 			click_timer += Time.fixedDeltaTime;
 	}
 
@@ -64,10 +69,11 @@ public class PlayerController : MonoBehaviour {
 				//GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
 				break;
 			case InputType.LEFT_M_UP:
-				float intensity = click_timer * gc.player_wave_convertion;
+				float intensity = click_timer * player_wave_convertion;
+				intensity = intensity < min_wave_intensity ? min_wave_intensity : intensity;
+				intensity = intensity > max_wave_intensity ? max_wave_intensity : intensity;
 				_charging_wave = false;
-				GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/intensity, 1.0f);
-				Debug.Log (intensity);
+				GameController.Instance.SpawnWave (my_pushable.safeZoneCollider, transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/intensity, 1.0f);
 				break;
 			case InputType.RIGHT_M_DOWN:
 				break;

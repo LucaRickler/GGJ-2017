@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class CameraController : MonoBehaviour {
 
 	public PlayerController player;
+	public RectTransform coinPanel;
+	public RectTransform lifePanel;
 
 	// Use this for initialization
 	void Start () {
@@ -15,5 +18,17 @@ public class CameraController : MonoBehaviour {
 		if (GameController.Instance.isCameraFollowMode ()) {
 			transform.position = new Vector3 (player.transform.position.x, player.transform.position.y, transform.position.z);
 		}
+	}
+
+	public void SetCameraPosition (Vector3 position) {
+		transform.position = position;
+	}
+
+	public void FreeScreen (bool state) {
+		StartCoroutine ("MoveUI", state);
+	}
+
+	IEnumerator MoveUI (bool state) {
+		yield return null;
 	}
 }

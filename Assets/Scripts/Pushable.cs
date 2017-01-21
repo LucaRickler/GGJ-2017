@@ -50,7 +50,7 @@ public class Pushable : MonoBehaviour {
         Wave wave = otherCollider.gameObject.GetComponent<Wave>();
         Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
         bool serveCollision = true;
-        serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
+        //serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
         if (serveCollision)
         {
             Debug.DrawLine(waveCenter, contactPoint);

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
@@ -10,12 +11,18 @@ public class GameController : MonoBehaviour {
 	public float max_speed = 500;
 	public float min_force_intensity = 0.1f;
 
-	public float player_wave_convertion = 1e3f;
-
     public GameObject wavePrefab;
+
+	public Text coinCounter;
+	public Text lifeCounter;
+
+	public int coins;
+	[Range (0,10)]
+	public int playerLifes;
 
     // Static singleton property
     private static GameController instance;
+
 
 	//----------------------------------------------------------------//
 
@@ -40,6 +47,9 @@ public class GameController : MonoBehaviour {
 		instance = this;
 
 		DontDestroyOnLoad(gameObject);
+		coins = 0;
+		Respawn ();
+		coinCounter.text = coins.ToString ();
 	}
 	
 	// Update is called once per frame
@@ -58,6 +68,16 @@ public class GameController : MonoBehaviour {
         //StartCoroutine(initWaveEnumerator(newElement.GetComponent<Wave>(), point, intensity, radius));
 		newElement.GetComponent<Wave>().init(creatorSafeZone, point, intensity, 0, radius); // TODO rimettere lo spread
     }
+
+	public void CollectCoin () {
+		coins++;
+		coinCounter.text = coins.ToString ();
+	}
+
+	public void Respawn () {
+		lifeCounter.text = "x " + playerLifes.ToString ();
+		//TODO: respawn del giocatore;
+	}
 
     //public IEnumerator initWaveEnumerator(Wave wave, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
     //{
