@@ -21,20 +21,18 @@ public class PlayerController : MonoBehaviour {
 
 	private Pushable my_pushable;
 
-	public GameObject sphericWave;
-	public GameObject conicWave;
+    private float click_timer_left;
+    private float click_timer_right;
+    private bool _charging_left;
+	public bool isChargingLeft { get { return _charging_left; } }
+    private bool _charging_right;
+    public bool isChargingRight { get { return _charging_right; } }
 
-	private float click_timer;
-	private bool _charging_wave;
-	public bool isChargingWave { get { return _charging_wave; } }
+    public WaveChargingCongig leftMouseWave;
+    public WaveChargingCongig rightMouseWave;
 
-	public float player_wave_convertion = 200;
-	public float min_wave_intensity = 150;
-	public float max_wave_intensity = 300;
-	public float max_charge_time = 5;
-
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		//charging_wave = false;
 		my_pushable = GetComponent<Pushable> ();
 		gc = GameController.Instance;
@@ -43,14 +41,19 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void FixedUpdate() {
-		if (isChargingWave && click_timer < max_charge_time)
-			click_timer += Time.fixedDeltaTime;
-	}
+		if ((isChargingLeft) && click_timer_left < leftMouseWave.max_charge_time)
+			click_timer_left += Time.fixedDeltaTime;
+        if ((isChargingRight) && click_timer_right < rightMouseWave.max_charge_time)
+            click_timer_right += Time.fixedDeltaTime;
+    }
 
 	public void RecordInput (InputType type) {
 		if (input_ready) {
 			Debug.Log (type);
-			switch (type) {
+            Vector3 mousePosition = Input.mousePosition;
+            Vector3 playerScreenCoord = GameController.Instance.camera.WorldToScreenPoint(gameObject.transform.position);
+            Vector3 waveDir = (mousePosition - playerScreenCoord).normalized;
+            switch (type) {
 			case InputType.DOWN: 
 				my_pushable.ApplyForce (new Vector2(0.0f,-gc.key_input_force));
 				break;
@@ -64,21 +67,58 @@ public class PlayerController : MonoBehaviour {
 				my_pushable.ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
-				click_timer = 0;
-				_charging_wave = true;
-				break;
-			case InputType.LEFT_M_UP:
-				float intensity = click_timer * player_wave_convertion;
-				intensity = intensity < min_wave_intensity ? min_wave_intensity : intensity;
-				intensity = intensity > max_wave_intensity ? max_wave_intensity : intensity;
-				_charging_wave = false;
-                GameController.Instance.SpawnWave(my_pushable.safeZoneCollider, transform.position, intensity, 0, 1, WaveDirectionEnum.FORWARD, true);
-				break;
-			case InputType.RIGHT_M_DOWN:
-				break;
-			case InputType.RIGHT_M_UP:
-				break;
+				click_timer_left = 0;
+				_charging_left = true;
+                leftMouseWave.ghargingDebug = true;
+                break;
+            case InputType.RIGHT_M_DOWN:
+                click_timer_right = 0;
+                _charging_right = true;
+                rightMouseWave.ghargingDebug = true;
+                break;
+            case InputType.LEFT_M_UP:
+				float intensity = click_timer_left * leftMouseWave.player_wave_convertion;
+				intensity = intensity < leftMouseWave.min_wave_intensity ? leftMouseWave.min_wave_intensity : intensity;
+				intensity = intensity > leftMouseWave.max_wave_intensity ? leftMouseWave.max_wave_intensity : intensity;
+                leftMouseWave.IntensityDebug = intensity;
+                _charging_left = false;
+                leftMouseWave.ghargingDebug = false;
+                if (leftMouseWave.type == WaveType.SPHERIC)
+                    GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+                else
+                {
+                    GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+                }
+                break;
+            case InputType.RIGHT_M_UP:
+                intensity = click_timer_right * rightMouseWave.player_wave_convertion;
+                intensity = intensity < rightMouseWave.min_wave_intensity ? rightMouseWave.min_wave_intensity : intensity;
+                intensity = intensity > rightMouseWave.max_wave_intensity ? rightMouseWave.max_wave_intensity : intensity;
+                rightMouseWave.IntensityDebug = intensity;
+                _charging_right = false;
+                rightMouseWave.ghargingDebug = false;
+                if (rightMouseWave.type == WaveType.SPHERIC)
+                    GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+                else
+                {
+                    GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+                }
+                break;
 			}
 		}
 	}
+}
+
+[System.Serializable]
+public class WaveChargingCongig
+{
+    public WaveType type;
+    public float player_wave_convertion = 200; //200
+    public float min_wave_intensity = 150; //150
+    public float max_wave_intensity = 300; //300
+    public float max_charge_time = 5; //5
+    public float startRadius = 1;
+    [Header("===== DEBUG =====")]
+    public float IntensityDebug = 0;
+    public bool ghargingDebug = false;
 }
