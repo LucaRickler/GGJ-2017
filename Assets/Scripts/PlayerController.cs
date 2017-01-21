@@ -66,14 +66,13 @@ public class PlayerController : MonoBehaviour {
 			case InputType.LEFT_M_DOWN:
 				click_timer = 0;
 				_charging_wave = true;
-				//GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
 				break;
 			case InputType.LEFT_M_UP:
 				float intensity = click_timer * player_wave_convertion;
 				intensity = intensity < min_wave_intensity ? min_wave_intensity : intensity;
 				intensity = intensity > max_wave_intensity ? max_wave_intensity : intensity;
 				_charging_wave = false;
-				GameController.Instance.SpawnWave (my_pushable.safeZoneCollider, transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/intensity, 1.0f);
+                GameController.Instance.SpawnWave(my_pushable.safeZoneCollider, transform.position, intensity, 0, 1, WaveDirectionEnum.FORWARD, true);
 				break;
 			case InputType.RIGHT_M_DOWN:
 				break;

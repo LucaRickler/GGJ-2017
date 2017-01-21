@@ -48,30 +48,35 @@ public class Pushable : MonoBehaviour {
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
         Wave wave = otherCollider.gameObject.GetComponent<Wave>();
-        Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
-        bool serveCollision = true;
-        //serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
-        if (serveCollision)
+        if (!wave.isCreator(safeZoneCollider) || !wave.isInCreatorSafeZone())
         {
-            Debug.DrawLine(waveCenter, contactPoint);
-            Debug.Log(contactPoint);
-
-            float absorbedIntensity = wave.intensity * absorbedFraction;
-
-            if (absorbedIntensity > GameController.Instance.min_force_intensity)
+            Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
+            bool serveCollision = true;
+            serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
+            if (serveCollision)
             {
-                float reflectedIntensity = absorbedIntensity * reflectedFraction;
-                float impulseIntensity = absorbedIntensity - reflectedIntensity;
-                if (!Mathf.Approximately(reflectedIntensity, 0) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
+                //Debug.DrawLine(waveCenter, contactPoint, Color.red, 100);
+
+                float absorbedIntensity = wave.intensity * absorbedFraction;
+
+                if (absorbedIntensity > GameController.Instance.min_force_intensity)
                 {
-                    GameController.Instance.SpawnWave(safeZoneCollider, contactPoint, reflectedIntensity, 0.0f);
-                }
-                if (!Mathf.Approximately(impulseIntensity, 0))
-                {
-                    Vector2 inpulseDirection = (contactPoint - waveCenter).normalized;
-                    if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
-                        inpulseDirection = inpulseDirection * (-1);
-                    ApplyForce(inpulseDirection * impulseIntensity);
+                    float reflectedIntensity = absorbedIntensity * reflectedFraction;
+                    float impulseIntensity = absorbedIntensity - reflectedIntensity;
+                    if (!Mathf.Approximately(reflectedIntensity, GameController.Instance.min_force_intensity) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
+                    {
+                        if (wave.firstSpawn || Vector3.Distance(contactPoint, waveCenter) > GameController.Instance.minimumWaveCollisionDistance)
+                        {
+                            wave.duplicate(safeZoneCollider, contactPoint, reflectedIntensity);
+                        }
+                    }
+                    if (!Mathf.Approximately(impulseIntensity, GameController.Instance.min_force_intensity))
+                    {
+                        Vector2 inpulseDirection = (contactPoint - waveCenter).normalized;
+                        if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
+                            inpulseDirection = inpulseDirection * (-1);
+                        ApplyForce(inpulseDirection * impulseIntensity);
+                    }
                 }
             }
         }
@@ -79,42 +84,93 @@ public class Pushable : MonoBehaviour {
 
     private bool getCollisionPoint (CircleCollider2D otherCollider, out Vector3 point)
     {
-        float alpha1 = Mathf.Tan(- transform.rotation.z * Mathf.Deg2Rad);
-        float alpha2 = Mathf.Tan(-Mathf.PI + transform.rotation.z * Mathf.Deg2Rad);
-        Vector3 otherColliderCenter = otherCollider.gameObject.transform.position + otherCollider.bounds.center;
-        Quaternion rot = Quaternion.AngleAxis(transform.rotation.z, Vector3.forward);
-        List<RaycastHit2D> hits = new List<RaycastHit2D>();
-        float expectedDistance = otherCollider.radius * otherCollider.gameObject.transform.lossyScale.x;
-        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.right, expectedDistance + 1));
-        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.up, expectedDistance + 1));
-        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.left, expectedDistance + 1));
-        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.down, expectedDistance + 1));
+        Vector3 otherColliderCenter = otherCollider.gameObject.transform.position;
+        Vector3 fromOtherToThisObjectVector = gameObject.transform.position - otherColliderCenter;
+        Wave wave = otherCollider.gameObject.GetComponent<Wave>();
+        //Debug.DrawLine(otherColliderCenter, fromOtherToThisObjectVector, Color.red, 100);
+        Quaternion rot = Quaternion.AngleAxis(gameObject.transform.rotation.eulerAngles.z, Vector3.forward);
+        //Quaternion rot = Quaternion.identity; // da modificare per girare i collider
+        Vector3[] axis = new Vector3[]
+        {
+            rot * Vector3.up,
+            rot * Vector3.down,
+            rot * Vector3.right,
+            rot * Vector3.left
+        };
+        float[] bestAngles = new float[] { 360, 360 };
+        Vector3[] bestDirections = new Vector3[] { Vector3.zero, Vector3.zero };
+        foreach (Vector3 dir in axis)
+        {
+            float a = angleBetween(dir, fromOtherToThisObjectVector);
+            if (a < bestAngles[0])
+            {
+                bestAngles[1] = bestAngles[0];
+                bestDirections[1] = bestDirections[0];
+                bestAngles[0] = a;
+                bestDirections[0] = dir;
+            }
+            else if (a < bestAngles[1])
+            {
+                bestAngles[1] = a;
+                bestDirections[1] = dir;
+            }
+        }
         RaycastHit2D myCollision = new RaycastHit2D();
         bool found = false;
-        foreach (RaycastHit2D h in hits)
+        //Debug.DrawLine(Vector3.zero, bestDirections[0], Color.red, 100);
+        //Debug.DrawLine(Vector3.zero, bestDirections[1], Color.yellow, 100);
+        for (int i=0; i<2; i++)
         {
-            if (h.collider == this.coll)
+            RaycastHit2D[] hits = Physics2D.RaycastAll(otherColliderCenter, bestDirections[i]);
+            float minDistance = float.PositiveInfinity;
+            foreach (RaycastHit2D h in hits)
             {
-                float dist = Vector3.Distance(h.point, otherColliderCenter);
-                if (Mathf.Abs(dist - expectedDistance) < 0.3f)
+                if (h.collider == this.coll)
                 {
-                    myCollision = h;
-                    found = true;
-                    break;
+                    float dist = Vector3.Distance(h.point, otherColliderCenter);
+                    if (dist < minDistance)
+                    {
+                        minDistance = dist;
+                        myCollision = h;
+                        found = true;
+                    }
                 }
             }
+            if (found)
+                break;
         }
         if (!found)
         {
-            Debug.Log("Collision point not found.");
-            point = myCollision.point;
+            //Debug.Log("Collision point not found.");
+            point = Vector3.zero;
             return false;
         }
         else
         {
             point = myCollision.point;
+            Debug.DrawLine(otherColliderCenter, point, Color.yellow, 100);
             return true;
         }
+    }
+
+    private float angleBetween (Vector3 a, Vector3 b)
+    {
+        Quaternion aRot = Quaternion.FromToRotation(Vector3.right, a);
+        Quaternion bRot = Quaternion.FromToRotation(Vector3.right, b);
+        float angle = Quaternion.Angle(aRot, bRot);
+        if (angle < 0)
+        {
+            angle *= -1;
+        }
+        while (angle > 360)
+        {
+            angle -= 360;
+        }
+        if (angle > 180)
+        {
+            angle = 360 - angle;
+        }
+        return angle;
     }
 
     private IEnumerator destroyThisObject()

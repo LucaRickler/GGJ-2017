@@ -4,37 +4,51 @@ using UnityEngine;
 
 public class Wave : MonoBehaviour {
 
-	public float propagationSpeed = 1;
+    public float propagationSpeed = 1;
     public WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD;
 
-	private float _localRadius = 0;
-	public float radius { get { return _localRadius + _initialRadius; } }
+    private float _localRadius = 0;
+    public float radius { get { return _localRadius + _initialRadius; } }
 
-	private float _initialRadius;
+    private float _spread;
+    public float spread { get { return _spread; } }
 
-	[SerializeField]
-	private float _intensity;
-	public float intensity { get { return _intensity; } private set { _intensity = value; } }
+    private float _initialRadius;
 
-	private float _initialIntensity;
-	private Vector3 _center;
+    [SerializeField]
+    private float _intensity;
+    public float intensity { get { return _intensity; } private set { _intensity = value; } }
 
-	private float kappa { get { return GameController.Instance.wave_kappa; } }
+    private float _initialIntensity;
+    private Vector3 _center;
+
+    private float kappa { get { return GameController.Instance.wave_kappa; } }
 
     private bool initialized = false;
 
     private CircleCollider2D creatorSafeZone;
     private CircleCollider2D waveCollider;
 
-    public void init (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity, float spread, float radius = 0,
-        WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD)
+    [SerializeField]
+    private bool _firstSpawn;
+    public bool firstSpawn { get{ return _firstSpawn; } }
+
+    public void duplicate (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity)
+    {
+        GameController.Instance.SpawnWave(creatorSafeZone, center, initialIntensity, _spread, 0, propagationDirection, false);
+    }
+
+    public void init (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity, float spread, float radius,
+        WaveDirectionEnum propagationDirection, bool firstSpawn)
 	{
 		_initialIntensity = initialIntensity;
 		_intensity = initialIntensity;
 		_localRadius = 0.0f;
 		_initialRadius = radius;
+        _spread = spread;
         this.propagationDirection = propagationDirection;
         _center = center;
+        _firstSpawn = firstSpawn;
 		gameObject.transform.position = center;
 		gameObject.transform.localScale = new Vector3(_localRadius, _localRadius, _localRadius);
         initialized = true;
@@ -76,12 +90,12 @@ public class Wave : MonoBehaviour {
 
     public bool isInCreatorSafeZone ()
     {
-        return creatorSafeZone.radius <= waveCollider.radius;
+        return creatorSafeZone != null && creatorSafeZone.radius >= waveCollider.radius;
     }
 
     public bool isCreator (CircleCollider2D creatorSafeZone)
     {
-        return creatorSafeZone == this.creatorSafeZone;
+        return creatorSafeZone != null && creatorSafeZone == this.creatorSafeZone;
     }
 
     IEnumerator destroyThisObjectCoroutine ()

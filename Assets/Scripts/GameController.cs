@@ -9,7 +9,8 @@ public class GameController : MonoBehaviour {
 	public float wave_kappa = 0.001f;
 	public float key_input_force = 500;
 	public float max_speed = 500;
-	public float min_force_intensity = 0.1f;
+	public float min_force_intensity = 5f;
+    public float minimumWaveCollisionDistance = 1f;
 
     public GameObject wavePrefab;
 
@@ -19,6 +20,8 @@ public class GameController : MonoBehaviour {
 	public int coins;
 	[Range (0,10)]
 	public int playerLifes;
+
+    public bool cameraCentered;
 
     // Static singleton property
     private static GameController instance;
@@ -58,15 +61,14 @@ public class GameController : MonoBehaviour {
 	}
 
 	public bool isCameraFollowMode () {
-		return false;//true;
+		return cameraCentered;
 	}
 
-	public void SpawnWave(CircleCollider2D creatorSafeZone, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
+	public void SpawnWave(CircleCollider2D creatorSafeZone, Vector3 point, float intensity, float spread, float radius, WaveDirectionEnum propagationDirection, bool firstSpawn)
     {
         GameObject newElement = Instantiate(wavePrefab) as GameObject;
         newElement.transform.localScale = new Vector3(1, 1, 1);
-        //StartCoroutine(initWaveEnumerator(newElement.GetComponent<Wave>(), point, intensity, radius));
-		newElement.GetComponent<Wave>().init(creatorSafeZone, point, intensity, 0, radius); // TODO rimettere lo spread
+		newElement.GetComponent<Wave>().init(creatorSafeZone, point, intensity, spread, radius, propagationDirection, firstSpawn);
     }
 
 	public void CollectCoin () {
@@ -78,10 +80,5 @@ public class GameController : MonoBehaviour {
 		lifeCounter.text = "x " + playerLifes.ToString ();
 		//TODO: respawn del giocatore;
 	}
-
-    //public IEnumerator initWaveEnumerator(Wave wave, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
-    //{
-   //     yield return null;
-   //     
-   // }
+   
 }
