@@ -23,7 +23,10 @@ public class Wave : MonoBehaviour {
 
     private bool initialized = false;
 
-	public void init (Vector3 center, float initialIntensity, float spread, float radius = 0,
+    private CircleCollider2D creatorSafeZone;
+    private CircleCollider2D waveCollider;
+
+    public void init (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity, float spread, float radius = 0,
         WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD)
 	{
 		_initialIntensity = initialIntensity;
@@ -35,14 +38,16 @@ public class Wave : MonoBehaviour {
 		gameObject.transform.position = center;
 		gameObject.transform.localScale = new Vector3(_localRadius, _localRadius, _localRadius);
         initialized = true;
-	}
+        this.creatorSafeZone = creatorSafeZone;
+    }
 
-	// Use this for initialization
-	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    // Use this for initialization
+    void Start () {
+        this.waveCollider = GetComponent<CircleCollider2D>();
+    }
+
+    // Update is called once per frame
+    void Update () {
         if (initialized)
         {
             float deltaRadius = propagationSpeed * Time.deltaTime;
@@ -68,6 +73,16 @@ public class Wave : MonoBehaviour {
             }
         }
 	}
+
+    public bool isInCreatorSafeZone ()
+    {
+        return creatorSafeZone.radius <= waveCollider.radius;
+    }
+
+    public bool isCreator (CircleCollider2D creatorSafeZone)
+    {
+        return creatorSafeZone == this.creatorSafeZone;
+    }
 
     IEnumerator destroyThisObjectCoroutine ()
     {

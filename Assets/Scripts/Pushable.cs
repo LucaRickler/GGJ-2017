@@ -15,10 +15,16 @@ public class Pushable : MonoBehaviour {
 
     public float hitPoints;
 
+    public CircleCollider2D safeZoneCollider;
+
     void Start() {
         gc = GameController.Instance;
         my_body = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
+        if (safeZoneCollider != null)
+        {
+            safeZoneCollider.enabled = false;
+        }
     }
 
     void FixedUpdate() {
@@ -41,14 +47,14 @@ public class Pushable : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D otherCollider)
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
-		Vector3 contactPoint = coll.bounds.ClosestPoint (waveCenter);
+        Wave wave = otherCollider.gameObject.GetComponent<Wave>();
+        Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
         bool serveCollision = true;
-        //serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
+        serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
         if (serveCollision)
         {
             Debug.DrawLine(waveCenter, contactPoint);
             Debug.Log(contactPoint);
-            Wave wave = otherCollider.gameObject.GetComponent<Wave>();
 
             float absorbedIntensity = wave.intensity * absorbedFraction;
 
@@ -58,7 +64,7 @@ public class Pushable : MonoBehaviour {
                 float impulseIntensity = absorbedIntensity - reflectedIntensity;
                 if (!Mathf.Approximately(reflectedIntensity, 0) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
                 {
-                    GameController.Instance.SpawnWave(contactPoint, reflectedIntensity, 0.0f);
+                    GameController.Instance.SpawnWave(safeZoneCollider, contactPoint, reflectedIntensity, 0.0f);
                 }
                 if (!Mathf.Approximately(impulseIntensity, 0))
                 {
