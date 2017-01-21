@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Pushable : MonoBehaviour {
 
@@ -36,33 +37,76 @@ public class Pushable : MonoBehaviour {
     public void ApplyForce(Vector2 impulse) {
         my_body.AddForce(impulse);
     }
-		
+
     void OnTriggerEnter2D(Collider2D otherCollider)
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
-		Vector3 contactPoint = coll.bounds.ClosestPoint(waveCenter);
-		//Vector3 contactPoint = coll.ClosestPointOnBounds(waveCenter);
-        Debug.DrawLine(waveCenter, contactPoint);
-		Debug.Log(contactPoint);
-        Wave wave = otherCollider.gameObject.GetComponent<Wave>();
-
-        float absorbedIntensity = wave.intensity * absorbedFraction;
-
-        if (absorbedIntensity > GameController.Instance.min_force_intensity)
+        bool serveCollision = true;
+        //serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
+        if (serveCollision)
         {
-            float reflectedIntensity = absorbedIntensity * reflectedFraction;
-            float impulseIntensity = absorbedIntensity - reflectedIntensity;
-            if (!Mathf.Approximately(reflectedIntensity, 0) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
+            Debug.DrawLine(waveCenter, contactPoint);
+            Debug.Log(contactPoint);
+            Wave wave = otherCollider.gameObject.GetComponent<Wave>();
+
+            float absorbedIntensity = wave.intensity * absorbedFraction;
+
+            if (absorbedIntensity > GameController.Instance.min_force_intensity)
             {
-                GameController.Instance.SpawnWave(contactPoint, reflectedIntensity, 0.0f);
+                float reflectedIntensity = absorbedIntensity * reflectedFraction;
+                float impulseIntensity = absorbedIntensity - reflectedIntensity;
+                if (!Mathf.Approximately(reflectedIntensity, 0) && wave.propagationDirection == WaveDirectionEnum.FORWARD)
+                {
+                    GameController.Instance.SpawnWave(contactPoint, reflectedIntensity, 0.0f);
+                }
+                if (!Mathf.Approximately(impulseIntensity, 0))
+                {
+                    Vector2 inpulseDirection = (contactPoint - waveCenter).normalized;
+                    if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
+                        inpulseDirection = inpulseDirection * (-1);
+                    ApplyForce(inpulseDirection * impulseIntensity);
+                }
             }
-            if (!Mathf.Approximately(impulseIntensity, 0))
+        }
+    }
+
+    private bool getCollisionPoint (CircleCollider2D otherCollider, out Vector3 point)
+    {
+        float alpha1 = Mathf.Tan(- transform.rotation.z * Mathf.Deg2Rad);
+        float alpha2 = Mathf.Tan(-Mathf.PI + transform.rotation.z * Mathf.Deg2Rad);
+        Vector3 otherColliderCenter = otherCollider.gameObject.transform.position + otherCollider.bounds.center;
+        Quaternion rot = Quaternion.AngleAxis(transform.rotation.z, Vector3.forward);
+        List<RaycastHit2D> hits = new List<RaycastHit2D>();
+        float expectedDistance = otherCollider.radius * otherCollider.gameObject.transform.lossyScale.x;
+        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.right, expectedDistance + 1));
+        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.up, expectedDistance + 1));
+        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.left, expectedDistance + 1));
+        hits.AddRange(Physics2D.RaycastAll(otherColliderCenter, rot * Vector3.down, expectedDistance + 1));
+        RaycastHit2D myCollision = new RaycastHit2D();
+        bool found = false;
+        foreach (RaycastHit2D h in hits)
+        {
+            if (h.collider == this.coll)
             {
-                Vector2 inpulseDirection = (contactPoint - waveCenter).normalized;
-                if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
-                    inpulseDirection = inpulseDirection * (-1);
-                ApplyForce(inpulseDirection * impulseIntensity);
+                float dist = Vector3.Distance(h.point, otherColliderCenter);
+                if (Mathf.Abs(dist - expectedDistance) < 0.3f)
+                {
+                    myCollision = h;
+                    found = true;
+                    break;
+                }
             }
+        }
+        if (!found)
+        {
+            Debug.Log("Collision point not found.");
+            point = myCollision.point;
+            return false;
+        }
+        else
+        {
+            point = myCollision.point;
+            return true;
         }
     }
 
