@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject sphericWave;
 	public GameObject conicWave;
 
-	private Time click_timer;
+	private float click_timer;
 	private bool _charging_wave;
 	public bool isChargingWave { get { return _charging_wave; } }
 
@@ -37,6 +37,10 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+	public void FixedUpdate() {
+		if (isChargingWave)
+			click_timer += Time.fixedDeltaTime;
+	}
 
 	public void RecordInput (InputType type) {
 		if (input_ready) {
@@ -55,13 +59,15 @@ public class PlayerController : MonoBehaviour {
 				my_pushable.ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
-				click_timer = Time.time;
+				click_timer = 0;
+				_charging_wave = true;
 				//GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
 				break;
 			case InputType.LEFT_M_UP:
-				float intensity = (Time.time - click_timer) * gc.player_wave_convertion;
-
+				float intensity = click_timer * gc.player_wave_convertion;
+				_charging_wave = false;
 				GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/intensity, 1.0f);
+				Debug.Log (intensity);
 				break;
 			case InputType.RIGHT_M_DOWN:
 				break;
