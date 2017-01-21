@@ -6,12 +6,11 @@ public class GameController : MonoBehaviour {
 	public PlayerController player;
 
 	public float wave_kappa = 0.001f;
-
 	public float key_input_force = 500;
-
 	public float max_speed = 500;
+	public float min_force_intensity = 0.1f;
 
-    public float min_force_intensity = 0.1f;
+	public float player_wave_convertion = 1.0f;
 
     public GameObject wavePrefab;
 

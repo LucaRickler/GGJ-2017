@@ -24,8 +24,13 @@ public class PlayerController : MonoBehaviour {
 	public GameObject sphericWave;
 	public GameObject conicWave;
 
+	private Time click_timer;
+	private bool _charging_wave;
+	public bool isChargingWave { get { return _charging_wave; } }
+
 	// Use this for initialization
 	void Start () {
+		//charging_wave = false;
 		my_pushable = GetComponent<Pushable> ();
 		gc = GameController.Instance;
 		input_ready = true;
@@ -50,10 +55,13 @@ public class PlayerController : MonoBehaviour {
 				my_pushable.ApplyForce (new Vector2(0.0f,gc.key_input_force*5));
 				break;
 			case InputType.LEFT_M_DOWN:
-				GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
-				//Debug.LogError ("");
+				click_timer = Time.time;
+				//GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/200, 1.0f);
 				break;
 			case InputType.LEFT_M_UP:
+				float intensity = (Time.time - click_timer) * gc.player_wave_convertion;
+
+				GameController.Instance.SpawnWave (transform.position, /*sphericWave, Input.mousePosition, 0.0f,*/intensity, 1.0f);
 				break;
 			case InputType.RIGHT_M_DOWN:
 				break;
@@ -62,11 +70,4 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 	}
-
-//	void SpawnWave (GameObject wave_type, Vector3 direction, float spread, float intensity) {
-//		GameObject newElement = Instantiate (wave_type) as GameObject;
-//		newElement.transform.localScale = new Vector3 (1, 1, 1);
-//		newElement.GetComponent<Wave> ().init (my_pushable.GetOrigin3D (), intensity, spread);
-////		resElements.Add (newElement);
-//	}
 }

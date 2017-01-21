@@ -41,6 +41,7 @@ public class Pushable : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D otherCollider)
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
+		Vector3 contactPoint = coll.bounds.ClosestPoint (waveCenter);
         bool serveCollision = true;
         //serveCollision = getCollisionPoint((CircleCollider2D)otherCollider, out contactPoint);
         if (serveCollision)
