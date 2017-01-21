@@ -49,19 +49,20 @@ public class GameController : MonoBehaviour {
 	}
 
 	public bool isCameraFollowMode () {
-		return true;
+		return false;//true;
 	}
 
 	public void SpawnWave(Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
     {
         GameObject newElement = Instantiate(wavePrefab) as GameObject;
         newElement.transform.localScale = new Vector3(1, 1, 1);
-        StartCoroutine(initWaveEnumerator(newElement.GetComponent<Wave>(), point, intensity, radius));
+        //StartCoroutine(initWaveEnumerator(newElement.GetComponent<Wave>(), point, intensity, radius));
+		newElement.GetComponent<Wave>().init(point, intensity, 0, radius); // TODO rimettere lo spread
     }
 
-    public IEnumerator initWaveEnumerator(Wave wave, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
-    {
-        yield return null;
-        wave.init(point, intensity, 0, radius); // TODO rimettere lo spread
-    }
+    //public IEnumerator initWaveEnumerator(Wave wave, Vector3 point, /*Vector3 direction, float spread, */float intensity, float radius)
+    //{
+   //     yield return null;
+   //     
+   // }
 }
