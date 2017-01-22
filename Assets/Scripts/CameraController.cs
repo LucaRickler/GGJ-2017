@@ -2,7 +2,15 @@
 using System.Collections;
 using System;
 
+public enum LevelSegment {
+	FIRST,
+	SECON,
+	THIRD
+}
+
 public class CameraController : MonoBehaviour {
+
+	public LevelSegment current_segment;
 
 	public PlayerController player;
 	public RectTransform coinPanel;
@@ -19,8 +27,12 @@ public class CameraController : MonoBehaviour {
 	public Vector3 second_waypoint;
 	public Vector3 third_waypoint;
 	// Use this for initialization
+
+	public GameObject overblock;
+	public GameObject leftblock;
 	void Start () {
 		vertical_move = false;
+		current_segment = LevelSegment.FIRST;
 	}
 	
 	// Update is called once per frame
@@ -32,10 +44,16 @@ public class CameraController : MonoBehaviour {
 				transform.position = new Vector3 (player.transform.position.x + 1 >= 0 ? player.transform.position.x + 1 : 0, transform.position.y, transform.position.z);
 		}
 
-		if (transform.position.x >= first_waypoint.x - 10 & !vertical_move)
+		if (transform.position.x >= first_waypoint.x - 10 & !vertical_move) {
 			vertical_move = true;
-		if (transform.position.y <= second_waypoint.y & vertical_move)
+			leftblock.SetActive (true);
+			current_segment = LevelSegment.SECON;
+		}
+		if (transform.position.y <= second_waypoint.y & vertical_move) {
 			vertical_move = false;
+			overblock.SetActive (true);
+			current_segment = LevelSegment.THIRD;
+		}
 		if (transform.position.x > third_waypoint.x)
 			GameController.Instance.EndGame ();
 			//transform.position = third_waypoint;

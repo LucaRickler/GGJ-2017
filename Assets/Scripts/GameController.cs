@@ -101,11 +101,12 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void Respawn () {
-		//sceneCamera.transform.position = respanPoint;
+		sceneCamera.transform.position = new Vector3(respanPoint.x, respanPoint.y, -10);
 		sceneCamera.GetComponent<CameraController> ().vertical_move = false;
 		lifeCounter.text = "x " + playerLifes.ToString ();
 		player.transform.position = respanPoint;
 		player.transform.rotation = Quaternion.identity;
+		player.GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
 
 		//TODO: respawn del giocatore;
 	}
