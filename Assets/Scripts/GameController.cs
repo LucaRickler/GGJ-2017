@@ -10,6 +10,8 @@ public class GameController : MonoBehaviour {
 	public Vector3 respanPoint;
 
 	public GameObject EndScreen;
+	public GameObject gameOverWrite;
+	public GameObject gameWinWrite;
 
     public float wave_kappa = 0.001f;
     public float key_input_force = 500;
@@ -122,6 +124,7 @@ public class GameController : MonoBehaviour {
 	IEnumerator DiePlayerDie() {
 		OpenEndScreen ();
 		AudioController.Instance.PlaySFX (AudioController.SFX.DEATH);
+		gameOverWrite.SetActive (true);
 		yield return null;
 	}
 
@@ -133,6 +136,8 @@ public class GameController : MonoBehaviour {
 
 	public void EndGame() {
 		OpenEndScreen ();
+		gameWinWrite.SetActive (true);
+		AudioController.Instance.PlaySFX (AudioController.SFX.WIN);
 	}
 
 	public void GameOver () {

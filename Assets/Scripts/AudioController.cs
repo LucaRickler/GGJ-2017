@@ -22,6 +22,7 @@ public class AudioController : MonoBehaviour {
 		LEVEL, //
 		EARTHQUAKE, //prima del boss, caduta muro
 		ESPLOSION, //ovvio
+		WIN,
 		NUMBER_OF_SFX
 	};
 
@@ -111,6 +112,11 @@ public class AudioController : MonoBehaviour {
 			sfx_source.Play ();
 			break;
 		case SFX.ESPLOSION:
+			sfx_source.Stop ();
+			sfx_source.clip = clips [(int)sound];
+			sfx_source.Play ();
+			break;
+		case SFX.WIN:
 			sfx_source.Stop ();
 			sfx_source.clip = clips [(int)sound];
 			sfx_source.Play ();
