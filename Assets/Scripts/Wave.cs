@@ -46,6 +46,9 @@ public class Wave : MonoBehaviour {
     private WaveType _waveType;
     public WaveType waveType { get { return _waveType; } }
 
+    private SpriteRenderer circularSpriteRenderer;
+    private float maxPossibleIntensity;
+
     public void duplicate (CircleCollider2D creatorSafeZone, Vector3 center, float initialIntensity)
     {
         if (waveType == WaveType.DIRETIONAL)
@@ -75,6 +78,34 @@ public class Wave : MonoBehaviour {
 		gameObject.transform.localScale = new Vector3(_localRadius, _localRadius, _localRadius);
         initialized = true;
         this.creatorSafeZone = creatorSafeZone;
+        maxPossibleIntensity = computeMaxPossibleIntensity(creatorSafeZone);
+    }
+
+    private float computeMaxPossibleIntensity (CircleCollider2D creatorSafeZone)
+    {
+        float max = -1;
+        if (creatorSafeZone != null && creatorSafeZone.gameObject.transform.parent != null)
+        {
+            PlayerController player = creatorSafeZone.gameObject.transform.parent.gameObject.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                if (player.leftMouseWave.type == WaveType.SPHERIC)
+                {
+                    if (player.leftMouseWave.max_wave_intensity > max)
+                        max = player.leftMouseWave.max_wave_intensity;
+                    if (player.leftMouseWave.max_charge_time * player.leftMouseWave.player_wave_convertion > max)
+                        max = player.leftMouseWave.max_charge_time * player.leftMouseWave.player_wave_convertion;
+                }
+                else if (player.rightMouseWave.type == WaveType.SPHERIC)
+                {
+                    if (player.rightMouseWave.max_wave_intensity > max)
+                        max = player.rightMouseWave.max_wave_intensity;
+                    if (player.rightMouseWave.max_charge_time * player.rightMouseWave.player_wave_convertion > max)
+                        max = player.rightMouseWave.max_charge_time * player.rightMouseWave.player_wave_convertion;
+                }
+            }
+        }
+        return max;
     }
 
     public void initDirectionalWave (CircleCollider2D creatorSafeZone, Vector3 center, Vector3 direction, float initialIntensity, float radius, WaveDirectionEnum propagationDirection, bool firstSpawn)
@@ -99,6 +130,7 @@ public class Wave : MonoBehaviour {
     // Use this for initialization
     void Start () {
         this.waveCollider = GetComponent<CircleCollider2D>();
+        this.circularSpriteRenderer = gameObject.GetComponentInChildren<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -114,6 +146,12 @@ public class Wave : MonoBehaviour {
             if (propagationDirection == WaveDirectionEnum.FORWARD)
             {
                 _localRadius += deltaRadius;
+                if (_waveType == WaveType.SPHERIC && maxPossibleIntensity > 0)
+                {
+                    Color c = circularSpriteRenderer.color;
+                    c.a = (intensity - GameController.Instance.min_force_intensity) / (maxPossibleIntensity - GameController.Instance.min_force_intensity);
+                    circularSpriteRenderer.color = c;
+                }
                 if (_localRadius > maximumWaveRadius)
                 {
                     StartCoroutine(destroyThisObjectCoroutine());
