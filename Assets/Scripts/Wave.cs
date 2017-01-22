@@ -150,7 +150,7 @@ public class Wave : MonoBehaviour {
                 {
                     Color c = circularSpriteRenderer.color;
                     c.a = (intensity - GameController.Instance.min_force_intensity) / (maxPossibleIntensity - GameController.Instance.min_force_intensity);
-                    circularSpriteRenderer.color = c;
+                    //circularSpriteRenderer.color = c;
                 }
                 if (_localRadius > maximumWaveRadius)
                 {
