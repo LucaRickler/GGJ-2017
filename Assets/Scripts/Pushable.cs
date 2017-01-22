@@ -51,7 +51,7 @@ public class Pushable : MonoBehaviour {
     {
         Vector3 waveCenter = otherCollider.gameObject.transform.position;
         Wave wave = otherCollider.gameObject.GetComponent<Wave>();
-        if (wave.waveType == WaveType.SPHERIC)
+        if (wave != null && wave.waveType == WaveType.SPHERIC)
         {
             if (!wave.isCreator(safeZoneCollider) || !wave.isInCreatorSafeZone())
             {
