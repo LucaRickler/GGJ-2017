@@ -23,7 +23,7 @@ public class Bomb : MonoBehaviour {
 		//GetComponent<Rigidbody2D> ().gravityScale = 0.0f;
 	}
 
-	void update () {
+	void Update () {
 		if(!amBomb){
 			if (Vector2.Distance (GameController.Instance.player.transform.position, transform.position) < detectionRange)
 				chasing = true;
@@ -31,7 +31,7 @@ public class Bomb : MonoBehaviour {
 				
 				//Vector3 direction = GameController.Instance.player.gameObject.transform.position - transform.position;
 				//transform.position = transform.position + (direction.normalized * speed * Time.deltaTime);
-				transform.position = Vector3.MoveTowards(transform.position, GameController.Instance.player.transform.position, 0.5f);
+				transform.position = Vector3.MoveTowards(transform.position, GameController.Instance.player.transform.position, 5*Time.deltaTime);
 			}
 		}
 	}
@@ -57,19 +57,19 @@ public class Bomb : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D (Collision2D other) {
-		if((other.gameObject.tag != "Bullets" || !amBomb) && other.gameObject.tag != "MainCamera")
+		if((other.gameObject.tag != "Bullets" || !amBomb) && other.gameObject.tag != "MainCamera" && other.gameObject.tag != "Coins")
 			StartCoroutine ("Explode", other);
 	}
 
 	IEnumerator Explode (Collision2D victim) {
 		yield return null;
-		//TODO: Damage!
 		explosion.SetActive (true);
-		yield return new WaitForSeconds (0.5f);
-		if (!(victim.gameObject.tag == "Terrain") & !(victim.gameObject.tag == "Player") && (victim.gameObject.tag != "Bullets"))
-			Destroy (victim.gameObject);
-		else if (victim.gameObject.tag == "Player")
-			GameController.Instance.PlayerDeath ();
+		yield return new WaitForSeconds (0.2f);
+		if(victim.gameObject != null)
+			if ((victim.gameObject.tag != "Terrain") && (victim.gameObject.tag != "Player") && (victim.gameObject.tag != "Bullets"))
+				Destroy (victim.gameObject);
+			else if (victim.gameObject.tag == "Player")
+				GameController.Instance.PlayerDeath ();
 		if(amBomb)
 			my_spawner.BombHasExploded ();
 		AudioController.Instance.PlaySFX (AudioController.SFX.ESPLOSION);

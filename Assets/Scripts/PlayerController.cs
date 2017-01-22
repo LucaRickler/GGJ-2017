@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour {
 			Vector3 mouseposition = gc.sceneCamera.ScreenToWorldPoint (Input.mousePosition);
             mouseposition.z = transform.position.z;
             Vector3 dir = mouseposition - transform.position;
-            transform.localRotation = Quaternion.Inverse(Quaternion.FromToRotation(dir, Vector3.right));
+            transform.localRotation = Quaternion.Inverse(Quaternion.FromToRotation(dir, Vector3.left));
             //transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);
             //(new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x)) * Time.deltaTime * rotation_speed);
             //Cone.transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);// (new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x))); //* Time.deltaTime * rotation_speed);
