@@ -77,7 +77,7 @@ public class Bomb : MonoBehaviour {
         }
 		if (amBomb)
 			my_spawner.BombHasExploded();
-		AudioController.Instance.PlaySFX(AudioController.SFX.ESPLOSION);
+		//AudioController.Instance.PlaySFX(AudioController.SFX.ESPLOSION);
 		Destroy(gameObject);
 
     }

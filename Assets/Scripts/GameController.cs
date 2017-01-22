@@ -112,8 +112,13 @@ public class GameController : MonoBehaviour {
 			Respawn ();
 	}
 
+	IEnumerator DiePlayerDie() {
+		AudioController.Instance.PlaySFX (AudioController.SFX.DEATH);
+		yield return null;
+	}
+
 	public void GameOver () {
-	
+		StartCoroutine ("DiePlayerDie");
 	}
    
 }

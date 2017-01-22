@@ -101,34 +101,38 @@ public class PlayerController : MonoBehaviour {
 					Cone.SetActive (true);
 				}
                 break;
-            case InputType.LEFT_M_UP:
+			case InputType.LEFT_M_UP:
 				float intensity = click_timer_left * leftMouseWave.player_wave_convertion;
 				intensity = intensity < leftMouseWave.min_wave_intensity ? leftMouseWave.min_wave_intensity : intensity;
 				intensity = intensity > leftMouseWave.max_wave_intensity ? leftMouseWave.max_wave_intensity : intensity;
-                leftMouseWave.IntensityDebug = intensity;
-                _charging_left = false;
-                leftMouseWave.chargingDebug = false;
-                if (leftMouseWave.type == WaveType.SPHERIC)
-                    GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
-                else
+				leftMouseWave.IntensityDebug = intensity;
+				_charging_left = false;
+				leftMouseWave.chargingDebug = false;
+				if (leftMouseWave.type == WaveType.SPHERIC) {
+					AudioController.Instance.PlaySFX (AudioController.SFX.CANNONE_GRANDE);
+					GameController.Instance.SpawnSphericWave (my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+				}else
                 {	
 					Cone.SetActive (false);
+					AudioController.Instance.PlaySFX(AudioController.SFX.CANNONE_PICCOLO);
                     GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 }
                 break;
-            case InputType.RIGHT_M_UP:
-                intensity = click_timer_right * rightMouseWave.player_wave_convertion;
-                intensity = intensity < rightMouseWave.min_wave_intensity ? rightMouseWave.min_wave_intensity : intensity;
-                intensity = intensity > rightMouseWave.max_wave_intensity ? rightMouseWave.max_wave_intensity : intensity;
-                rightMouseWave.IntensityDebug = intensity;
-                _charging_right = false;
-                rightMouseWave.chargingDebug = false;
-                if (rightMouseWave.type == WaveType.SPHERIC)
-                    GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
-                else
+			case InputType.RIGHT_M_UP:
+				intensity = click_timer_right * rightMouseWave.player_wave_convertion;
+				intensity = intensity < rightMouseWave.min_wave_intensity ? rightMouseWave.min_wave_intensity : intensity;
+				intensity = intensity > rightMouseWave.max_wave_intensity ? rightMouseWave.max_wave_intensity : intensity;
+				rightMouseWave.IntensityDebug = intensity;
+				_charging_right = false;
+				rightMouseWave.chargingDebug = false;
+				if (rightMouseWave.type == WaveType.SPHERIC) {
+					AudioController.Instance.PlaySFX (AudioController.SFX.CANNONE_GRANDE);
+					GameController.Instance.SpawnSphericWave (my_pushable.safeZoneCollider, transform.position, intensity, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+				}else
                 {
 					Cone.SetActive (false);
-                    GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+					AudioController.Instance.PlaySFX(AudioController.SFX.CANNONE_PICCOLO);
+					GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 }
                 break;
 			}
