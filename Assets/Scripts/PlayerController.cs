@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour {
 
 	public GameObject Cone;
 
-	private bool input_ready;
+	public bool input_ready;
 
 	private GameController gc;
 

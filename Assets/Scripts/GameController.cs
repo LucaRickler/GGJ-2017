@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
     public PlayerController player;
 
 	public Vector3 respanPoint;
+
+	public GameObject EndScreen;
 
     public float wave_kappa = 0.001f;
     public float key_input_force = 500;
@@ -59,11 +62,12 @@ public class GameController : MonoBehaviour {
         }
         instance = this;
 
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         coins = 0;
 		playerLifes = 5;
         Respawn();
         coinCounter.text = coins.ToString();
+		AudioController.Instance.PlaySFX (AudioController.SFX.LEVEL);
     }
 
     // Update is called once per frame
@@ -97,6 +101,8 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void Respawn () {
+		sceneCamera.transform.position = respanPoint;
+		sceneCamera.GetComponent<CameraController> ().vertical_move = false;
 		lifeCounter.text = "x " + playerLifes.ToString ();
 		player.transform.position = respanPoint;
 		player.transform.rotation = Quaternion.identity;
@@ -106,19 +112,39 @@ public class GameController : MonoBehaviour {
 
 	public void PlayerDeath () {
 		playerLifes--;
-		if (playerLifes == 0)
+		if (playerLifes <= 0)
 			GameOver ();
 		else
 			Respawn ();
 	}
 
 	IEnumerator DiePlayerDie() {
+		OpenEndScreen ();
 		AudioController.Instance.PlaySFX (AudioController.SFX.DEATH);
 		yield return null;
 	}
 
+	void OpenEndScreen() {
+		EndScreen.SetActive (true);
+		player.input_ready = false;
+		//time?
+	}
+
+	public void EndGame() {
+		OpenEndScreen ();
+	}
+
 	public void GameOver () {
 		StartCoroutine ("DiePlayerDie");
+	}
+
+	public void Retry() {
+		EndScreen.SetActive (false);
+		SceneManager.LoadScene ("DIOCANE");
+	}
+
+	public void Exit() {
+		Application.Quit ();
 	}
    
 }

@@ -32,7 +32,7 @@ public class InputController : MonoBehaviour {
 		}
 		instance = this;
 
-		DontDestroyOnLoad(gameObject);
+		//DontDestroyOnLoad(gameObject);
 	}
 	
 

@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour {
 	public GameObject background1;
 	public GameObject background2;
 
-	private bool vertical_move = false;
+	public bool vertical_move = false;
 
 //	public bool boss_started = false;
 
@@ -37,7 +37,8 @@ public class CameraController : MonoBehaviour {
 		if (transform.position.y <= second_waypoint.y & vertical_move)
 			vertical_move = false;
 		if (transform.position.x > third_waypoint.x)
-			transform.position = third_waypoint;
+			GameController.Instance.EndGame ();
+			//transform.position = third_waypoint;
 	}
 
 	public void SetCameraPosition (Vector3 position) {
