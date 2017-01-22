@@ -56,23 +56,28 @@ public class Bomb : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter2D (Collision2D other) {
-		if((other.gameObject.tag != "Bullets" || !amBomb) && other.gameObject.tag != "MainCamera" && other.gameObject.tag != "Coins")
-			StartCoroutine ("Explode", other);
-	}
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if ((other.gameObject.tag != "Bullets" || !amBomb) && other.gameObject.tag != "MainCamera")
+            StartCoroutine("Explode", other.gameObject);
+    }
 
-	IEnumerator Explode (Collision2D victim) {
-		yield return null;
-		explosion.SetActive (true);
-		yield return new WaitForSeconds (0.2f);
-		if(victim.gameObject != null)
-			if ((victim.gameObject.tag != "Terrain") && (victim.gameObject.tag != "Player") && (victim.gameObject.tag != "Bullets"))
-				Destroy (victim.gameObject);
-			else if (victim.gameObject.tag == "Player")
-				GameController.Instance.PlayerDeath ();
-		if(amBomb)
-			my_spawner.BombHasExploded ();
-		AudioController.Instance.PlaySFX (AudioController.SFX.ESPLOSION);
-		Destroy (gameObject);
-	}
+    IEnumerator Explode(GameObject victim)
+    {
+        yield return null;
+        //TODO: Damage!
+        explosion.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        if (victim != null)
+        {
+            if (!(victim.tag == "Terrain") & !(victim.tag == "Player") && (victim.tag != "Bullets"))
+                Destroy(victim);
+            else if (victim.tag == "Player")
+                GameController.Instance.PlayerDeath();
+            if (amBomb)
+                my_spawner.BombHasExploded();
+            AudioController.Instance.PlaySFX(AudioController.SFX.ESPLOSION);
+            Destroy(gameObject);
+        }
+    }
 }	
