@@ -14,6 +14,7 @@ public class BombSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		bombExploded = true;
 		Vector3 direction = Vector3.Lerp (transform.position, spawnObjective, 1.0f);
 		spawnPosition = transform.position + direction.normalized * 1.0f; 
 	}
@@ -23,7 +24,7 @@ public class BombSpawner : MonoBehaviour {
 		if (bombExploded) {
 			GameObject newElement = Instantiate(bombTemplate) as GameObject;
 			newElement.transform.localScale = new Vector3(1, 1, 1);
-			//newElement.GetComponent<Bomb>().init(true, spawnPosition, spawnObjective);
+			newElement.GetComponent<Bomb>().init(true, spawnPosition, spawnObjective, false, this);
 			bombExploded = false;
 		}
 	}

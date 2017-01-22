@@ -8,16 +8,33 @@ public class CameraController : MonoBehaviour {
 	public RectTransform coinPanel;
 	public RectTransform lifePanel;
 
+	private bool vertical_move = false;
+
+//	public bool boss_started = false;
+
+	public Vector3 first_waypoint;
+	public Vector3 second_waypoint;
+	public Vector3 third_waypoint;
 	// Use this for initialization
 	void Start () {
-	
+		vertical_move = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (GameController.Instance.isCameraFollowMode ()) {
-			transform.position = new Vector3 (player.transform.position.x, transform.position.y, transform.position.z);
+			if(vertical_move)
+				transform.position = new Vector3 (transform.position.x, player.transform.position.y <= 0 ? player.transform.position.y : 0, transform.position.z);
+			else
+				transform.position = new Vector3 (player.transform.position.x >= 0 ? player.transform.position.x : 0, transform.position.y, transform.position.z);
 		}
+
+		if (transform.position.x >= first_waypoint.x & !vertical_move)
+			vertical_move = true;
+		if (transform.position.y <= second_waypoint.y & vertical_move)
+			vertical_move = false;
+		if (transform.position.x > third_waypoint.x)
+			transform.position = third_waypoint;
 	}
 
 	public void SetCameraPosition (Vector3 position) {

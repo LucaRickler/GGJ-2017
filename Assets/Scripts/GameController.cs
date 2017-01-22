@@ -6,6 +6,8 @@ public class GameController : MonoBehaviour {
 
     public PlayerController player;
 
+	public Vector3 respanPoint;
+
     public float wave_kappa = 0.001f;
     public float key_input_force = 500;
     public float max_speed = 500;
@@ -15,6 +17,8 @@ public class GameController : MonoBehaviour {
     public float spread = 30;
     [Range(5, 100)]
     public float maximumWaveRadius = 10;
+
+	public float intensityToDamage = 1.0f;
 
     public GameObject wavePrefab;
 
@@ -57,6 +61,7 @@ public class GameController : MonoBehaviour {
 
         DontDestroyOnLoad(gameObject);
         coins = 0;
+		playerLifes = 5;
         Respawn();
         coinCounter.text = coins.ToString();
     }
@@ -93,7 +98,22 @@ public class GameController : MonoBehaviour {
 
 	public void Respawn () {
 		lifeCounter.text = "x " + playerLifes.ToString ();
+		player.transform.position = respanPoint;
+		player.transform.rotation = Quaternion.identity;
+
 		//TODO: respawn del giocatore;
+	}
+
+	public void PlayerDeath () {
+		playerLifes--;
+		if (playerLifes == 0)
+			GameOver ();
+		else
+			Respawn ();
+	}
+
+	public void GameOver () {
+	
 	}
    
 }

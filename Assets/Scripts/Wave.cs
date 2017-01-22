@@ -12,7 +12,7 @@ public class Wave : MonoBehaviour {
 
     public WaveDirectionEnum propagationDirection = WaveDirectionEnum.FORWARD;
 
-	[Range(5, 30)]
+	[Range(5, 200)]
 	public float maximumWaveRadius = 100;
 
     private float _localRadius = 0;
@@ -23,6 +23,7 @@ public class Wave : MonoBehaviour {
 
     private float _initialRadius;
 
+	[SerializeField]
     private float _intensity;
     public float intensity { get { return _intensity; } private set { _intensity = value; } }
 

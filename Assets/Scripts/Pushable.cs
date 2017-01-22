@@ -92,6 +92,9 @@ public class Pushable : MonoBehaviour {
                 if (wave.propagationDirection == WaveDirectionEnum.BACKWARD)
                     inpulseDirection = inpulseDirection * (-1);
                 ApplyForce(inpulseDirection * impulseIntensity);
+				if (impulseIntensity * gc.intensityToDamage > hitPoints & hitPoints > 0) {
+					StartCoroutine ("destroyThisObject");
+				}
             }
         }
     }
