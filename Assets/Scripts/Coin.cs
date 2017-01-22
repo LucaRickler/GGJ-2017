@@ -6,12 +6,13 @@ using System;
 public class Coin : MonoBehaviour {
 
 	void OnCollisionEnter2D (Collision2D other) {
-		if(other.gameObject.tag != "Player")
+		if(other.gameObject.tag == "Player" || other.gameObject.tag == "Bullets")
 			StartCoroutine ("Collect", other);
 	}
 
 	IEnumerator Collect () {
 		yield return null;
+		AudioController.Instance.PlaySFX (AudioController.SFX.COINS);
 		GameController.Instance.CollectCoin ();
 		Destroy (gameObject);
 	}

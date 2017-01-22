@@ -13,6 +13,8 @@ public class Bomb : MonoBehaviour {
 	private bool chasing;
 	public bool amBomb;
 
+	public GameObject explosion;
+
 	public float speed = 10.0f;
 
 	// Use this for initialization
@@ -52,13 +54,15 @@ public class Bomb : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D (Collision2D other) {
-		if(other.gameObject.tag != "Bullets" || !amBomb)
+		if((other.gameObject.tag != "Bullets" || !amBomb) && other.gameObject.tag != "MainCamera")
 			StartCoroutine ("Explode", other);
 	}
 
 	IEnumerator Explode (Collision2D victim) {
 		yield return null;
 		//TODO: Damage!
+		explosion.SetActive (true);
+		yield return new WaitForSeconds (0.5f);
 		if (!(victim.gameObject.tag == "Terrain") & !(victim.gameObject.tag == "Player") && (victim.gameObject.tag != "Bullets"))
 			Destroy (victim.gameObject);
 		else if (victim.gameObject.tag == "Player")

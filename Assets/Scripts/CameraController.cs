@@ -8,6 +8,9 @@ public class CameraController : MonoBehaviour {
 	public RectTransform coinPanel;
 	public RectTransform lifePanel;
 
+	public GameObject background1;
+	public GameObject background2;
+
 	private bool vertical_move = false;
 
 //	public bool boss_started = false;

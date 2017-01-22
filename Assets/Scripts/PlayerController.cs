@@ -15,6 +15,8 @@ public enum InputType {
 
 public class PlayerController : MonoBehaviour {
 
+	public GameObject Cone;
+
 	private bool input_ready;
 
 	private GameController gc;
@@ -31,6 +33,7 @@ public class PlayerController : MonoBehaviour {
     public WaveChargingCongig leftMouseWave;
     public WaveChargingCongig rightMouseWave;
 
+	public float rotation_speed = 1000.0f;
 
     // Use this for initialization
     void Start () {
@@ -47,7 +50,14 @@ public class PlayerController : MonoBehaviour {
 			click_timer_left += Time.fixedDeltaTime;
         if ((isChargingRight) && click_timer_right < rightMouseWave.max_charge_time)
             click_timer_right += Time.fixedDeltaTime;
-    }
+		if (Cone.activeSelf) {
+			Vector3 mouseposition = gc.sceneCamera.ScreenToWorldPoint (Input.mousePosition);
+			Vector3 dir = mouseposition - transform.position;
+			transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);
+				//(new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x)) * Time.deltaTime * rotation_speed);
+			//Cone.transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);// (new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x))); //* Time.deltaTime * rotation_speed);
+		}
+	}
 
 	public void RecordInput (InputType type) {
 		if (input_ready) {
@@ -72,12 +82,22 @@ public class PlayerController : MonoBehaviour {
 
 				click_timer_left = 0;
 				_charging_left = true;
-                leftMouseWave.chargingDebug = true;
+				leftMouseWave.chargingDebug = true;
+				if (leftMouseWave.type == WaveType.SPHERIC){
+					//GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+				} else {
+					Cone.SetActive (true);
+				}
                 break;
             case InputType.RIGHT_M_DOWN:
                 click_timer_right = 0;
                 _charging_right = true;
                 rightMouseWave.chargingDebug = true;
+				if (leftMouseWave.type == WaveType.SPHERIC){
+					//GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
+				} else {
+					Cone.SetActive (true);
+				}
                 break;
             case InputType.LEFT_M_UP:
 				float intensity = click_timer_left * leftMouseWave.player_wave_convertion;
@@ -89,7 +109,8 @@ public class PlayerController : MonoBehaviour {
                 if (leftMouseWave.type == WaveType.SPHERIC)
                     GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 else
-                {
+                {	
+					Cone.SetActive (false);
                     GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 }
                 break;
@@ -104,6 +125,7 @@ public class PlayerController : MonoBehaviour {
                     GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 else
                 {
+					Cone.SetActive (false);
                     GameController.Instance.SpawnDiretionalWave(my_pushable.safeZoneCollider, transform.position, waveDir, intensity, GameController.Instance.spread, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
                 }
                 break;
