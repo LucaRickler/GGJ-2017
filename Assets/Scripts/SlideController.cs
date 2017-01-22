@@ -42,6 +42,7 @@ public class SlideController : MonoBehaviour
         }
     }
 
+    public float delay;
     public SlideInfo[] slides;
     public string nextSceneName;
 
@@ -129,7 +130,6 @@ public class SlideController : MonoBehaviour
 
     IEnumerator StartTextCoroutine (TextInfo t, float waitTimeBeforeText)
     {
-        yield return new WaitForSecondsRealtime(waitTimeBeforeText);
         if (t.text != null)
             t.text.gameObject.SetActive(true);
         yield return new WaitForSecondsRealtime(t.time);
@@ -140,12 +140,14 @@ public class SlideController : MonoBehaviour
     {
         _textIndex = -1;
         if (oldSlide != null)
+            yield return new WaitForSecondsRealtime(delay);
+        if (oldSlide != null)
             yield return new WaitForSecondsRealtime(oldSlide.timeAfterTexts);
         if (newSlide != null)
         {
             if (newSlide.background != null)
                 newSlide.background.gameObject.SetActive(true);
-            yield return new WaitForSecondsRealtime(newSlide.timeAfterTexts);
+            yield return new WaitForSecondsRealtime(newSlide.timeBeforeText);
             next();
         }
         else
