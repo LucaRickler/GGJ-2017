@@ -41,23 +41,25 @@ public class PlayerController : MonoBehaviour {
 		my_pushable = GetComponent<Pushable> ();
 		gc = GameController.Instance;
 		input_ready = true;
-		//my_pushable.isPC = true;
-	}
-	
-	// Update is called once per frame
-	public void FixedUpdate() {
+        //my_pushable.isPC = true;
+    }
+
+    // Update is called once per frame
+    public void FixedUpdate() {
 		if ((isChargingLeft) && click_timer_left < leftMouseWave.max_charge_time)
 			click_timer_left += Time.fixedDeltaTime;
         if ((isChargingRight) && click_timer_right < rightMouseWave.max_charge_time)
             click_timer_right += Time.fixedDeltaTime;
 		if (Cone.activeSelf) {
 			Vector3 mouseposition = gc.sceneCamera.ScreenToWorldPoint (Input.mousePosition);
-			Vector3 dir = mouseposition - transform.position;
-			transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);
-				//(new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x)) * Time.deltaTime * rotation_speed);
-			//Cone.transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);// (new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x))); //* Time.deltaTime * rotation_speed);
-		}
-	}
+            mouseposition.z = transform.position.z;
+            Vector3 dir = mouseposition - transform.position;
+            transform.localRotation = Quaternion.Inverse(Quaternion.FromToRotation(dir, Vector3.right));
+            //transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);
+            //(new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x)) * Time.deltaTime * rotation_speed);
+            //Cone.transform.localRotation = Quaternion.FromToRotation (Vector3.forward, dir);// (new Vector3 (0, 0, Mathf.Atan2 (dir.y, dir.x))); //* Time.deltaTime * rotation_speed);
+        }
+    }
 
 	public void RecordInput (InputType type) {
 		if (input_ready) {
