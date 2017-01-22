@@ -24,13 +24,16 @@ public class Bomb : MonoBehaviour {
 	}
 
 	void update () {
-		if(!amBomb)
+		if(!amBomb){
 			if (Vector2.Distance (GameController.Instance.player.transform.position, transform.position) < detectionRange)
 				chasing = true;
 			if (chasing) {
-				Vector3 direction = GameController.Instance.player.gameObject.transform.position - transform.position;
-				transform.position = transform.position + (direction.normalized * speed * Time.deltaTime);
+				
+				//Vector3 direction = GameController.Instance.player.gameObject.transform.position - transform.position;
+				//transform.position = transform.position + (direction.normalized * speed * Time.deltaTime);
+				transform.position = Vector3.MoveTowards(transform.position, GameController.Instance.player.transform.position, 0.5f);
 			}
+		}
 	}
 	
 	public void init (bool isStatic, Vector3 startPosition, Vector3 objectivePoint, bool small_fish, BombSpawner spawner) {
