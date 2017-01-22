@@ -67,17 +67,18 @@ public class Bomb : MonoBehaviour {
         yield return null;
         //TODO: Damage!
         explosion.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         if (victim != null)
-        {
-            if (!(victim.tag == "Terrain") & !(victim.tag == "Player") && (victim.tag != "Bullets"))
+		{
+			if (!(victim.tag == "Terrain") & !(victim.tag == "Player") && (victim.tag != "Bullets"))
                 Destroy(victim);
             else if (victim.tag == "Player")
                 GameController.Instance.PlayerDeath();
-            if (amBomb)
-                my_spawner.BombHasExploded();
-            AudioController.Instance.PlaySFX(AudioController.SFX.ESPLOSION);
-            Destroy(gameObject);
         }
+		if (amBomb)
+			my_spawner.BombHasExploded();
+		AudioController.Instance.PlaySFX(AudioController.SFX.ESPLOSION);
+		Destroy(gameObject);
+
     }
 }	

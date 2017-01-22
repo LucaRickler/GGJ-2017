@@ -27,12 +27,12 @@ public class CameraController : MonoBehaviour {
 	void Update () {
 		if (GameController.Instance.isCameraFollowMode ()) {
 			if(vertical_move)
-				transform.position = new Vector3 (transform.position.x, player.transform.position.y <= 0 ? player.transform.position.y : 0, transform.position.z);
+				transform.position = new Vector3 (second_waypoint.x, player.transform.position.y <= 0 ? player.transform.position.y : 0, transform.position.z);
 			else
 				transform.position = new Vector3 (player.transform.position.x + 1 >= 0 ? player.transform.position.x + 1 : 0, transform.position.y, transform.position.z);
 		}
 
-		if (transform.position.x >= first_waypoint.x & !vertical_move)
+		if (transform.position.x >= first_waypoint.x - 10 & !vertical_move)
 			vertical_move = true;
 		if (transform.position.y <= second_waypoint.y & vertical_move)
 			vertical_move = false;

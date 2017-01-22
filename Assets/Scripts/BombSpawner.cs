@@ -7,7 +7,7 @@ public class BombSpawner : MonoBehaviour {
 
 	public GameObject bombTemplate;
 	public Vector3 spawnObjective;
-	public Vector3 spawnPosition;
+	private Vector3 spawnPosition;
 
 	private bool bombExploded;
 
