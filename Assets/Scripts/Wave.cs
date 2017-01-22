@@ -105,7 +105,12 @@ public class Wave : MonoBehaviour {
     void Update () {
         if (initialized)
         {
-            float deltaRadius = propagationSpeed * Time.deltaTime;
+            float realPropagationSpeed = propagationSpeed;
+            if (_waveType == WaveType.SPHERIC)
+            {
+                realPropagationSpeed = propagationSpeed * 1.7f;
+            }
+            float deltaRadius = realPropagationSpeed * Time.deltaTime;
             if (propagationDirection == WaveDirectionEnum.FORWARD)
             {
                 _localRadius += deltaRadius;
