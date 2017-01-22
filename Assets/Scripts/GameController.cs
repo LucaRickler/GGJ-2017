@@ -101,7 +101,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void Respawn () {
-		sceneCamera.transform.position = respanPoint;
+		//sceneCamera.transform.position = respanPoint;
 		sceneCamera.GetComponent<CameraController> ().vertical_move = false;
 		lifeCounter.text = "x " + playerLifes.ToString ();
 		player.transform.position = respanPoint;
