@@ -57,6 +57,12 @@ public class CameraController : MonoBehaviour {
 		if (transform.position.x > third_waypoint.x)
 			GameController.Instance.EndGame ();
 			//transform.position = third_waypoint;
+		if (current_segment == LevelSegment.FIRST) {
+			overblock.SetActive (false);
+			leftblock.SetActive (false);
+		} else if (current_segment == LevelSegment.SECON) {
+			overblock.SetActive (false);
+		}
 	}
 
 	public void SetCameraPosition (Vector3 position) {
