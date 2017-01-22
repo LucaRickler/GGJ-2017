@@ -50,7 +50,7 @@ public class Bomb : MonoBehaviour {
 		}
 	}
 	IEnumerator InitBomb (Vector3 objective) {
-		while (Vector3.Distance (objective, transform.position) > 0.1) {
+		while (Vector3.Distance (objective, transform.position) > 0.5) {
 			transform.position = Vector3.Lerp (objective, transform.position, 0.9f);
 			yield return new WaitForSeconds(0.02f);
 		}

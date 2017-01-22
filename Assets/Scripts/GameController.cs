@@ -29,7 +29,7 @@ public class GameController : MonoBehaviour {
     public Text lifeCounter;
 
     public int coins;
-    [Range(0, 10)]
+   // [Range(0, 10)]
     public int playerLifes;
 
     public bool cameraCentered;
@@ -111,7 +111,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void PlayerDeath () {
-		playerLifes--;
+		playerLifes -= 1;
 		if (playerLifes <= 0)
 			GameOver ();
 		else

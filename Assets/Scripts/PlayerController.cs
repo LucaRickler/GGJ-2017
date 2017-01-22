@@ -16,6 +16,7 @@ public enum InputType {
 public class PlayerController : MonoBehaviour {
 
 	public GameObject Cone;
+	public SpriteRenderer backwave;
 
 	public bool input_ready;
 
@@ -48,8 +49,12 @@ public class PlayerController : MonoBehaviour {
     public void FixedUpdate() {
 		if ((isChargingLeft) && click_timer_left < leftMouseWave.max_charge_time)
 			click_timer_left += Time.fixedDeltaTime;
-        if ((isChargingRight) && click_timer_right < rightMouseWave.max_charge_time)
-            click_timer_right += Time.fixedDeltaTime;
+		if ((isChargingRight) && click_timer_right < rightMouseWave.max_charge_time) {
+			click_timer_right += Time.fixedDeltaTime;
+			Color c = backwave.color;
+			c.a = click_timer_right / rightMouseWave.max_charge_time;
+			backwave.color = c;
+		}
 		if (Cone.activeSelf) {
 			Vector3 mouseposition = gc.sceneCamera.ScreenToWorldPoint (Input.mousePosition);
             mouseposition.z = transform.position.z;
@@ -97,13 +102,14 @@ public class PlayerController : MonoBehaviour {
                 click_timer_right = 0;
                 _charging_right = true;
                 rightMouseWave.chargingDebug = true;
-				if (leftMouseWave.type == WaveType.SPHERIC){
+				//if (leftMouseWave.type == WaveType.SPHERIC){
 					if (leftMouseWave.type == WaveType.DIRETIONAL && !isChargingLeft)
 						Cone.SetActive (false);
+					backwave.gameObject.SetActive (true);
 					//GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
-				} else {
+				//} else {
 					//Cone.SetActive (true);
-				}
+				//}
                 break;
 			case InputType.LEFT_M_UP:
 				float intensity = click_timer_left * leftMouseWave.player_wave_convertion;
@@ -130,6 +136,10 @@ public class PlayerController : MonoBehaviour {
 				_charging_right = false;
 				rightMouseWave.chargingDebug = false;
 				if (rightMouseWave.type == WaveType.SPHERIC) {
+					Color c = backwave.color;
+					c.a = 0.0f;
+					backwave.color = c;
+					backwave.gameObject.SetActive (false);
 					AudioController.Instance.PlaySFX (AudioController.SFX.CANNONE_GRANDE);
 					GameController.Instance.SpawnSphericWave (my_pushable.safeZoneCollider, transform.position, intensity, rightMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
 				}else
