@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour {
 				_charging_left = true;
 				leftMouseWave.chargingDebug = true;
 				if (leftMouseWave.type == WaveType.SPHERIC){
+					if (rightMouseWave.type == WaveType.DIRETIONAL && !isChargingRight)
+						Cone.SetActive (false);
 					//GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
 				} else {
 					Cone.SetActive (true);
@@ -96,9 +98,11 @@ public class PlayerController : MonoBehaviour {
                 _charging_right = true;
                 rightMouseWave.chargingDebug = true;
 				if (leftMouseWave.type == WaveType.SPHERIC){
+					if (leftMouseWave.type == WaveType.DIRETIONAL && !isChargingLeft)
+						Cone.SetActive (false);
 					//GameController.Instance.SpawnSphericWave(my_pushable.safeZoneCollider, transform.position, intensity, leftMouseWave.startRadius, WaveDirectionEnum.FORWARD, true);
 				} else {
-					Cone.SetActive (true);
+					//Cone.SetActive (true);
 				}
                 break;
 			case InputType.LEFT_M_UP:

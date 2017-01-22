@@ -78,7 +78,7 @@ public class AudioController : MonoBehaviour {
 		case SFX.CANNONE_PICCOLO:
 			sfx_source.Stop ();
 			sfx_source.clip = clips [(int)sound];
-			//sfx_source.Play ();
+			sfx_source.Play ();
 			break;
 		case SFX.CHECKPOINT:
 			sfx_source.Stop ();
